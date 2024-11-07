@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1013779718441",
+    "project_id": "dailyroutenc",
+    "storage_bucket": "dailyroutenc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1013779718441:android:d9a93543b36ea4c336d738",
+        "android_client_info": {
+          "package_name": "com.fabrice.dailyroute"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrRaDCRBCdjKDO8PzFDDpWqXSmBvj8zBA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

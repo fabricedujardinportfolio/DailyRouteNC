@@ -12,8 +12,11 @@
     "@capacitor/cli": "^6.1.2",
     "@capacitor/core": "^6.1.2",
     "@capacitor/preferences": "^6.0.2",
+    "@firebasegen/default-connector": "file:dataconnect-generated/js/default-connector",
     "core-js": "^3.8.3",
-    "vue": "^3.2.13"
+    "firebase": "^11.0.1",
+    "vue": "^3.2.13",
+    "vue-router": "^4.4.5"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
