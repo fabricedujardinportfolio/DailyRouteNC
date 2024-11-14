@@ -1,21 +1,24 @@
 <template>
   <div class="login-container">
-    <h2>Connexion</h2>
-    <form @submit.prevent="login">
+    <!-- N'afficher le formulaire que si l'utilisateur n'est pas authentifié -->
+    <form v-if="!isAuthenticated" @submit.prevent="login">
       <input v-model="email" type="email" placeholder="Email" />
       <input v-model="password" type="password" placeholder="Mot de passe" />
       <button type="submit">Se connecter</button>
     </form>
+
+    <!-- Message d'erreur -->
     <p v-if="error">{{ error }}</p>
+
     <!-- Lien vers la page d'inscription -->
-    <p>Pas encore de compte ? <router-link to="/signup">Inscrivez-vous ici</router-link></p>
+    <p>Pas encore de compte ? 
+      <router-link to="/signup">Inscrivez-vous ici</router-link>
+    </p>
   </div>
 </template>
 
 <script>
-// Importer l'authentification depuis votre fichier de configuration
-import { auth } from '../firebaseConfig';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 
 export default {
   data() {
@@ -23,69 +26,45 @@ export default {
       email: '',
       password: '',
       error: '',
+      isAuthenticated: false, // Suivre l'état d'authentification
     };
+  },
+  created() {
+    const auth = getAuth();
+    
+    // Vérifier si l'utilisateur est déjà connecté
+    onAuthStateChanged( auth, ( user ) => {
+      if ( user ) {
+        // L'utilisateur est connecté, rediriger vers la page d'accueil
+        this.isAuthenticated = true;
+        this.$router.push('/accueil');
+      } else {
+        this.isAuthenticated = false;
+      }
+    });
   },
   methods: {
     login() {
+      const auth = getAuth();
+      
       signInWithEmailAndPassword(auth, this.email, this.password)
-        .then((userCredential) => {
-          // Connexion réussie
+        .then( ( userCredential ) => {
           console.log('Utilisateur connecté :', userCredential.user);
-          // Rediriger l'utilisateur, par exemple :
-          this.$router.push('/dashboard');
+          this.isAuthenticated = true;
+          // Redirection vers la page d'accueil après connexion réussie
+          this.$router.push('/accueil');
         })
-        .catch((error) => {
-          // Gestion des erreurs de connexion
-          this.error = error.message;
-          console.error('Erreur de connexion :', error);
+        .catch( ( error ) => {
+          switch ( error.code ) {
+            case 'auth/invalid-email':
+              this.error = "L'email est invalide.";
+              break;
+            default:
+              // Message générique pour toutes les autres erreurs
+              this.error = "Identifiants incorrects. Veuillez vérifier vos informations.";
+          }
         });
     },
   },
 };
 </script>
-
-<style scoped>
-/* Style basique pour le composant de connexion */
-.login-container {
-  max-width: 400px;
-  margin: auto;
-  text-align: center;
-}
-
-input {
-  display: block;
-  width: 100%;
-  margin-bottom: 10px;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-}
-
-button {
-  padding: 10px;
-  width: 100%;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-p {
-  margin-top: 15px;
-}
-
-p a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-p a:hover {
-  text-decoration: underline;
-}
-</style>

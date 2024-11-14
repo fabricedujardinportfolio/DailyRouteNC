@@ -1,5 +1,5 @@
 <template>
-  <main class="content">
+  <main id="accueil" class="content">
     <section class="hero">
       <div class="hero-text">
         <h2>Facilitez vos déplacements quotidiens</h2>

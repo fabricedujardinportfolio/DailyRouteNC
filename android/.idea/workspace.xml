@@ -10,56 +10,40 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="679e45ed-6eac-4eaa-acad-33d53feeaa78" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/proguard-rules.pro" beforeDir="false" afterPath="$PROJECT_DIR$/app/proguard-rules.pro" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/getcapacitor/myapp/ExampleInstrumentedTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/getcapacitor/myapp/ExampleInstrumentedTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/assets/capacitor.config.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/assets/capacitor.config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/assets/public/css/app.528e95a5.css" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/assets/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/assets/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/assets/public/js/app.ba004318.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/assets/public/js/app.ba004318.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/assets/public/js/chunk-vendors.023bc903.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/assets/public/js/chunk-vendors.023bc903.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/dailyroutenc/MainActivity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/ic_launcher_background.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_launcher_background.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/ic_launcher_background.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/ic_launcher_background.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/styles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/styles.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/xml/file_paths.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/xml/file_paths.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/test/java/com/getcapacitor/myapp/ExampleUnitTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/test/java/com/getcapacitor/myapp/ExampleUnitTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/variables.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/variables.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../capacitor.config.json" beforeDir="false" afterPath="$PROJECT_DIR$/../capacitor.config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../dist/css/app.528e95a5.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../dist/css/app.bfb47ea8.css" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../dist/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../dist/js/app.ba004318.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../dist/js/app.ba004318.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../dist/js/chunk-vendors.023bc903.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../dist/js/chunk-vendors.023bc903.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../dist/js/app.04f2fa75.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../dist/js/app.04f2fa75.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../dist/js/chunk-vendors.89541615.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../dist/js/chunk-vendors.89541615.js.map" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/immutable/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/immutable/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/immutable/dist/immutable.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/immutable/dist/immutable.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/immutable/dist/immutable.es.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/immutable/dist/immutable.es.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/immutable/dist/immutable.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/immutable/dist/immutable.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/immutable/dist/immutable.js.flow" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/immutable/dist/immutable.js.flow" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/immutable/dist/immutable.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/immutable/dist/immutable.min.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/immutable/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/immutable/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/sass/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/sass/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/sass/sass.dart.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/sass/sass.dart.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../src/App.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/../src/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/assets/styles/style.scss" beforeDir="false" afterPath="$PROJECT_DIR$/../src/assets/styles/style.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/components/Inscription.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../src/components/Inscription.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/components/UserLogin.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../src/components/UserLogin.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/components/accueil.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../src/components/accueil.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/components/header.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../src/components/header.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../src/router/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\Helium laptop 1\.android\avd\Pixel_5_API_34.avd]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[adb-R5CTA2DBV9Y-wDCyXp._adb-tls-connect._tcp]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />

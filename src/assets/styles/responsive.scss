@@ -1,0 +1,45 @@
+// PAGE ACCUEIL
+#accueil {
+    // Media queries pour les écrans plus petits
+    @media (max-width: 1024px) {
+        .hero-text h2 {
+            font-size: 1.8rem; // Réduire la taille du titre sur tablette
+        }
+
+        .hero-text p {
+            font-size: 1.1rem; // Réduire la taille du texte sur tablette
+        }
+
+        .features .feature-item {
+            width: calc(50% - 20px); // Deux colonnes sur tablette
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-text h2 {
+            font-size: 1.6rem; // Réduire la taille du titre sur mobile
+        }
+
+        .hero-text p {
+            font-size: 1rem; // Réduire la taille du texte sur mobile
+        }
+
+        .features .feature-item {
+            width: calc(100% - 20px); // Une colonne sur mobile
+        }
+
+        .hero-image img {
+            max-width: 90%; // Réduire la taille de l'image sur mobile
+        }
+
+        .hero-button {
+            padding: 10px 20px; // Adapter le bouton sur mobile
+        }
+
+        .content {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+    }
+}
