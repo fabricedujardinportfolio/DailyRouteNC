@@ -43,3 +43,37 @@
 
     }
 }
+
+// login
+#login {
+  
+    /* Conteneur de la vidéo */
+    .container-bg-video-presentation {
+      
+      /* Texte de présentation */
+      .presentation-text {
+        h1 {
+      
+          @media (max-width: 768px) {
+            font-size: 2rem; /* Ajuster sur mobile */
+          }
+      
+          @media (max-width: 480px) {
+            font-size: 1.8rem; /* Ajuster sur très petits écrans */
+          }
+        }
+      
+        p {
+      
+          @media (max-width: 768px) {
+            font-size: 1rem; /* Ajuster sur mobile */
+          }
+      
+          @media (max-width: 480px) {
+            font-size:.9rem; /* Ajuster sur très petits écrans */
+          }
+        }
+      }
+    }
+  }
+  

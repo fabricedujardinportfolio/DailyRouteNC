@@ -1,176 +1,92 @@
-/* Conteneur principal */
-.container-presentation-login {
-  position: relative;
-  height: 100vh; /* Occuper toute la hauteur de l'écran */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+#login {
 
-/* Conteneur de la vidéo */
-.container-bg-video-presentation {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-/* Style de la vidéo */
-.bg-video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* La vidéo couvre tout le conteneur sans déformation */
-}
-
-/* Conteneur des boutons */
-.action-buttons {
-  position: absolute;
-  bottom: 50px; /* Positionner les boutons en bas */
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-
-  button {
-    padding: 15px 30px;
-    margin: 0 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #0056b3;
-    }
-
-    &:focus {
-      outline: none;
-    }
-
-    &:active {
-      transform: scale(0.98);
-    }
-
-    transition: background-color .3s, transform .2s ease-in-out;
-
-    @media (max-width: 768px) {
-      padding: 10px 20px; /* Adapter les boutons sur mobile */
-      font-size: .9rem;
-    }
-
-    @media (max-width: 480px) {
-      padding: 8px 16px; /* Encore plus petit sur très petits écrans */
-      font-size: .8rem;
-    }
-   }
-
-   span {
-     margin-left: -10px; /* Ajuster l'espacement du texte "ou" */
-     color:white;
-     font-size:.9rem ;
-   }
-}
-
-/* Styles pour la modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0,0,0,0.7);
-  
-   display:flex ;
-   justify-content:center ;
-   align-items:center ;
-}
-
-.modal-content {
-   background-color:white ;
-   padding :20px ;
-   border-radius :8px ;
-   max-width :400px ;
-   width :90% ;
-   
-   h2{
-     margin-bottom :20px ;
-     text-align:center ;
-   }
-   
-   input {
-    width: 100%; /* Propriété standard */
-    max-width: 100%; /* Assurer que l'input ne dépasse pas */
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  
-    /* Préfixes pour compatibilité avec les anciens navigateurs */
-    -webkit-box-sizing: border-box;
-       -moz-box-sizing: border-box;
-        -ms-box-sizing: border-box;
-            box-sizing: border-box; /* Propriété standard */
+  /* Conteneur principal */
+  &.container-presentation-login {
+    position: relative;
+    height: 100vh; /* Occuper toute la hauteur de l'écran */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Pour empiler les éléments verticalement */
   }
-   
-   button{
-     width :100% ;
-     padding :10px ;
-     background-color:#007bff ;
-     color:white ;
-     border:none ;
-     border-radius :5px ;
-     
-     &:hover{
-       background-color:#0056b3 ;
-     }
-     
-     &:focus{
-       outline:none ;
-     }
-     
-     &:active{
-       transform :scale(0.98) ;
-     }
-     
-     transition :background-color .3s ,transform .2s ease-in-out ; 
-   }
-}
 
-.close-modal{
-   margin-top :15px ; 
-   background-color:red ; 
-}
-
-/* Styles pour le formulaire de connexion */
-.login-container {
-    max-width: 400px;
-    margin: auto;
-    text-align: center;
-
-    input {
-      display: block;
-      width: -webkit-fill-available;
-      margin-bottom: 10px;
-      padding: 8px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      padding: 10px;
+  /* Conteneur de la vidéo */
+  .container-bg-video-presentation {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
+    gap: 1rem;
+  
+    /* Style de la vidéo */
+    .bg-video {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      background-color: #007bff;
-      color: #fff;
-      border-radius: 4px;
-      cursor: pointer;
-
-      &:hover {
-        background-color: #0056b3;
+      height: 100%;
+      object-fit: cover; /* La vidéo couvre tout le conteneur sans déformation */
+      opacity: 0.5;
+    }
+    
+    /* Texte de présentation */
+    .presentation-text {
+      position: relative;
+      z-index: 1; /* Pour que le texte soit au-dessus de la vidéo */
+      text-align: center;
+      width: 80%;
+      h1 {
+        font-size: 2.5rem;
+        color: white;
+        margin-bottom: 10px;
+      }
+    
+      p {
+        font-size: 1.2rem;
+        color: white;
       }
     }
-
-    p {
-      margin-top: 15px;
+    
+    /* Conteneur des boutons */
+    .action-buttons {
+      position: relative; /* Positionner les boutons sous le texte */
+      z-index: 1; /* Pour que les boutons soient au-dessus de la vidéo */
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    
+       button{
+         padding :15px ;
+         background-color:#007bff ;
+         color:white ;
+         border:none ;
+         border-radius :5px ;
+    
+         &:hover{
+           background-color:#0056b3 ;
+         }
+    
+         &:focus{
+           outline:none ;
+         }
+    
+         &:active{
+           transform :scale(0.98) ;
+         }
+    
+         transition :background-color .3s ,transform .2s ease-in-out ; 
+       }
+    
+       .separateur{
+         color:white ;
+       }
     }
+  }
+  
+  /* Styles pour la modal */
+  @import 'modallogin';
 }

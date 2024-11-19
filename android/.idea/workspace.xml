@@ -10,12 +10,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="679e45ed-6eac-4eaa-acad-33d53feeaa78" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/assets/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/assets/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../dist/css/app.5f424d05.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../dist/css/app.0fa72ec6.css" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../dist/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../dist/js/app.54ff61df.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../dist/js/app.54ff61df.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../dist/js/app.99a161e8.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../dist/js/app.99a161e8.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/assets/styles/inscription.scss" beforeDir="false" afterPath="$PROJECT_DIR$/../src/assets/styles/inscription.scss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../src/assets/styles/login.scss" beforeDir="false" afterPath="$PROJECT_DIR$/../src/assets/styles/login.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/assets/styles/responsive.scss" beforeDir="false" afterPath="$PROJECT_DIR$/../src/assets/styles/responsive.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/components/Inscription.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../src/components/Inscription.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../src/components/UserLogin.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../src/components/UserLogin.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
