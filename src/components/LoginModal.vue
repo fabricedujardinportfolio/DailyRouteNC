@@ -41,8 +41,7 @@
         const auth = getAuth();
         
         signInWithEmailAndPassword(auth, this.email, this.password)
-          .then((userCredential) => {
-            console.log('Utilisateur connecté :', userCredential.user);
+          .then( () => {
             this.$emit('login-success'); // Émettre un événement pour indiquer que la connexion a réussi
             this.closeModal(); // Fermer la modal après connexion réussie
           })
@@ -57,10 +56,5 @@
           });
       },
     },
-    watch: {
-        show(val) {
-            console.log('Prop show:', val); // Vérifier si la prop "show" change correctement
-        }
-    }
   };
   </script>
