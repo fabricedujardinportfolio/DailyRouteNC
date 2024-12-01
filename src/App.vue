@@ -1,12 +1,13 @@
 <template>
-  <div>
-    <!-- Afficher un indicateur de chargement pendant la vérification -->
-    <div v-if="isLoading">Chargement...</div>
+  <div :class="{ 'app-loading': is_loading }">
+    <!-- Loader global -->
+    <div v-if="is_loading" class="loader-container">
+      <p>Chargement...</p>
+    </div>
 
-    <!-- N'afficher le contenu que si la vérification est terminée -->
+    <!-- Affiche le contenu si tout est prêt -->
     <div v-else>
-      <!-- N'afficher le HeaderComponent que si l'utilisateur est authentifié -->
-      <HeaderComponent v-if="isAuthenticated" />
+      <HeaderComponent v-if="is_authenticated" />
       <router-view />
     </div>
   </div>
@@ -23,26 +24,27 @@ export default {
   },
   data() {
     return {
-      isAuthenticated: false,
-      isLoading: true, // Indicateur de chargement
+      is_authenticated: false,
+      is_loading: true, // Indicateur global de chargement
     };
   },
   created() {
     const auth = getAuth();
-    
-    // Vérifier l'état d'authentification dès que le composant est monté
-    onAuthStateChanged(auth, (user) => {
+
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // L'utilisateur est connecté
-        this.isAuthenticated = true;
-        this.$router.push('/accueil'); // Rediriger vers la page d'accueil si connecté
+        this.is_authenticated = true;
+        if (this.$route.path !== '/accueil') {
+          this.$router.push('/accueil');
+        }
       } else {
-        // L'utilisateur n'est pas connecté
-        this.isAuthenticated = false;
-        this.$router.push('/login'); // Rediriger vers la page login si non connecté
+        this.is_authenticated = false;
+        if (this.$route.path !== '/login') {
+          this.$router.push('/login');
+        }
       }
-      // La vérification est terminée
-      this.isLoading = false;
+      // Terminer le chargement global
+      this.is_loading = false;
     });
   },
 };
