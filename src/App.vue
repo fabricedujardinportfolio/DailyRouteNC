@@ -1,51 +1,46 @@
 <template>
-  <div :class="{ 'app-loading': is_loading }">
-    <!-- Loader global -->
-    <div v-if="is_loading" class="loader-container">
-      <p>Chargement...</p>
-    </div>
+  <div class="min-h-screen bg-gray-50">
+    <nav class="bg-white shadow-sm">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center h-16">
+          <router-link to="/" class="font-bold text-xl text-blue-600">
+            DailyRouteNC
+          </router-link>
+          
+          <div class="hidden md:flex space-x-4">
+            <router-link
+              to="/search-routes"
+              class="text-gray-600 hover:text-blue-600 px-3 py-2"
+            >
+              Rechercher
+            </router-link>
+            <router-link
+              to="/tokens-shop"
+              class="text-gray-600 hover:text-blue-600 px-3 py-2"
+            >
+              Acheter des jetons
+            </router-link>
+            <router-link
+              to="/login"
+              class="text-gray-600 hover:text-blue-600 px-3 py-2"
+            >
+              Connexion
+            </router-link>
+            <router-link
+              to="/register"
+              class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            >
+              S'inscrire
+            </router-link>
+          </div>
+        </div>
+      </div>
+    </nav>
 
-    <!-- Affiche le contenu si tout est prêt -->
-    <div v-else>
-      <HeaderComponent v-if="is_authenticated" />
-      <router-view />
-    </div>
+    <router-view />
   </div>
 </template>
 
-<script>
-import HeaderComponent from './components/Header.vue';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-
-export default {
-  name: 'App',
-  components: {
-    HeaderComponent,
-  },
-  data() {
-    return {
-      is_authenticated: false,
-      is_loading: true, // Indicateur global de chargement
-    };
-  },
-  created() {
-    const auth = getAuth();
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        this.is_authenticated = true;
-        if (this.$route.path !== '/accueil') {
-          this.$router.push('/accueil');
-        }
-      } else {
-        this.is_authenticated = false;
-        if (this.$route.path !== '/login') {
-          this.$router.push('/login');
-        }
-      }
-      // Terminer le chargement global
-      this.is_loading = false;
-    });
-  },
-};
+<script setup lang="ts">
+// La logique du composant sera ajoutée ici
 </script>

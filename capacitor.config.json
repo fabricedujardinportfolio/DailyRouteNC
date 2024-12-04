@@ -1,6 +1,0 @@
-{
-  "appId": "com.fabrice.dailyroute",
-  "appName": "dailyroutenc",
-  "bundledWebRuntime": false,
-  "webDir": "dist"
-}
