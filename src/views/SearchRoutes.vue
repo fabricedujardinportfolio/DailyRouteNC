@@ -1,7 +1,16 @@
 <template>
   <div class="min-h-screen bg-gray-100 py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-      <h1 class="text-2xl font-semibold text-gray-900 mb-6">Rechercher un Trajet</h1>
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-semibold text-gray-900">Rechercher un Trajet</h1>
+        <button
+          v-if="isDriver"
+          @click="showAddRouteModal = true"
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center"
+        >
+          <span class="mr-2">+</span> Ajouter un trajet
+        </button>
+      </div>
       
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <!-- Filtres -->
@@ -45,21 +54,41 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal d'ajout de trajet -->
+    <AddRouteModal
+      v-if="showAddRouteModal"
+      @close="showAddRouteModal = false"
+      @submit="handleAddRoute"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useUserStore } from '../stores/user';
 import RouteMap from '../components/map/RouteMap.vue';
 import RouteFilters from '../components/filters/RouteFilters.vue';
+import AddRouteModal from '../components/routes/AddRouteModal.vue';
 import type { Route } from '../types/user';
 
-// Données de test pour la démonstration
+const userStore = useUserStore();
+const isDriver = computed(() => userStore.user?.role === 'driver');
+const showAddRouteModal = ref(false);
 const routes = ref<Route[]>([]);
 
 const updateFilters = (newFilters: any) => {
-  // La logique de filtrage sera implémentée plus tard
   console.log('Nouveaux filtres:', newFilters);
+};
+
+const handleAddRoute = async (routeData: Partial<Route>) => {
+  try {
+    // La logique d'ajout sera implémentée plus tard avec Firebase
+    console.log('Nouveau trajet:', routeData);
+    showAddRouteModal.value = false;
+  } catch (error) {
+    console.error('Erreur lors de l\'ajout du trajet:', error);
+  }
 };
 
 const formatTime = (time: string) => {

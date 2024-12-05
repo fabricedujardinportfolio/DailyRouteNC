@@ -21,7 +21,8 @@
     "postcss": "^8.4.35",
     "autoprefixer": "^10.4.17",
     "leaflet": "^1.9.4",
-    "@headlessui/vue": "^1.7.19"
+    "@headlessui/vue": "^1.7.19",
+    "vuefire": "^3.1.23"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.3",

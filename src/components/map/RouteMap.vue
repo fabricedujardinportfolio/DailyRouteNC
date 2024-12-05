@@ -7,6 +7,10 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
+// Fix Leaflet icon issues
+import iconUrl from 'leaflet/dist/images/marker-icon.png';
+import iconShadowUrl from 'leaflet/dist/images/marker-shadow.png';
+
 const mapContainer = ref<HTMLElement | null>(null);
 let map: L.Map | null = null;
 
@@ -16,6 +20,18 @@ const NOUMEA_CENTER = [-22.2758, 166.4580];
 onMounted(() => {
   if (!mapContainer.value) return;
 
+  // Fix default icon
+  const defaultIcon = L.icon({
+    iconUrl,
+    shadowUrl: iconShadowUrl,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+  L.Marker.prototype.options.icon = defaultIcon;
+
   // Initialisation de la carte
   map = L.map(mapContainer.value).setView(NOUMEA_CENTER, 12);
 
@@ -23,17 +39,6 @@ onMounted(() => {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
   }).addTo(map);
-
-  // Correction des icônes Leaflet
-  const defaultIcon = L.icon({
-    iconUrl: '/node_modules/leaflet/dist/images/marker-icon.png',
-    shadowUrl: '/node_modules/leaflet/dist/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-  });
-  L.Marker.prototype.options.icon = defaultIcon;
 });
 
 onUnmounted(() => {

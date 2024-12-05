@@ -71,7 +71,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { reactive, watch } from 'vue';
+
+interface RouteFilters {
+  province: string;
+  commune: string;
+  quartier: string;
+  minRating: number;
+}
 
 const communes = [
   'Nouméa',
@@ -142,12 +149,20 @@ const quartiers = [
   'La Coulée'
 ];
 
-const filters = reactive({
+const emit = defineEmits<{
+  (e: 'update:filters', filters: RouteFilters): void;
+}>();
+
+const filters = reactive<RouteFilters>({
   province: '',
   commune: '',
   quartier: '',
   minRating: 0
 });
+
+watch(filters, (newFilters) => {
+  emit('update:filters', { ...newFilters });
+}, { deep: true });
 
 const resetFilters = () => {
   filters.province = '';
@@ -155,6 +170,4 @@ const resetFilters = () => {
   filters.quartier = '';
   filters.minRating = 0;
 };
-
-defineEmits(['update:filters']);
 </script>
