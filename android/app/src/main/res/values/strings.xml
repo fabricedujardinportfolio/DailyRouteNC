@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">DailyRouteNC</string>
+    <string name="title_activity_main">DailyRouteNC</string>
+    <string name="package_name">com.fabrice.dailyroute</string>
+    <string name="custom_url_scheme">com.fabrice.dailyroute</string>
+</resources>
