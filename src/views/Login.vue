@@ -55,12 +55,27 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { auth } from '../firebaseConfig' // Importez l'auth depuis votre configuration Firebase
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { useRouter } from 'vue-router'
 
 const email = ref('')
 const password = ref('')
+const router = useRouter()
 
 const handleLogin = async () => {
-  // La logique de connexion sera implémentée plus tard
-  console.log('Login attempt:', { email: email.value, password: password.value })
+  try {
+    // Connexion de l'utilisateur avec email et mot de passe
+    const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value)
+    const user = userCredential.user
+
+    console.log('Utilisateur connecté :', user)
+
+    // Redirigez l'utilisateur vers une page sécurisée (par exemple, le tableau de bord)
+    router.push('/dashboard')
+  } catch (error) {
+    console.error('Erreur lors de la connexion :', error.message)
+    alert('Erreur : ' + error.message)
+  }
 }
 </script>
