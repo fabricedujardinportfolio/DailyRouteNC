@@ -5,6 +5,24 @@ export interface User {
   role: 'driver' | 'walker';
   phoneNumber?: string;
   profilePicture?: string;
+  isVerified: boolean;
+  documents: UserDocuments;
+}
+
+export interface UserDocuments {
+  identityCard?: DocumentInfo;
+  driverLicense?: DocumentInfo;
+  vehicleRegistration?: DocumentInfo;
+  insurance?: DocumentInfo;
+  status: 'pending' | 'verified' | 'rejected';
+  rejectionReason?: string;
+}
+
+export interface DocumentInfo {
+  url: string;
+  uploadDate: string;
+  verificationStatus: 'pending' | 'verified' | 'rejected';
+  rejectionReason?: string;
 }
 
 export interface Driver extends User {

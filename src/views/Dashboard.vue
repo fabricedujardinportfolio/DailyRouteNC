@@ -35,13 +35,14 @@ import DashboardStats from '../components/dashboard/DashboardStats.vue';
 import ActivityFeed from '../components/dashboard/ActivityFeed.vue';
 import DriverDashboard from '../components/dashboard/DriverDashboard.vue';
 import WalkerDashboard from '../components/dashboard/WalkerDashboard.vue';
-import { fetchUserStats, fetchUserActivities } from '../services/dashboard';
-import type { DashboardStats, Activity, DriverStats, WalkerStats } from '../types/dashboard';
+import { fetchUserStats } from '../services/dashboard/stats';
+import { fetchUserActivities } from '../services/dashboard/activities';
+import type { DashboardStats as DashboardStatsType, Activity, DriverStats, WalkerStats } from '../types/dashboard';
 
 const userStore = useUserStore();
 const isDriver = computed(() => userStore.isDriver);
 
-const stats = ref<DashboardStats>({
+const stats = ref<DashboardStatsType>({
   totalTrips: 0,
   totalDistance: 0,
   averageRating: 0,

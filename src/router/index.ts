@@ -2,6 +2,15 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useUserStore } from '../stores/user';
 import Home from '../views/Home.vue';
 
+// Import views directly to avoid dynamic import issues
+import Login from '../views/Login.vue';
+import Register from '../views/Register.vue';
+import Dashboard from '../views/Dashboard.vue';
+import Profile from '../views/Profile.vue';
+import CreateRoute from '../views/CreateRoute.vue';
+import SearchRoutes from '../views/SearchRoutes.vue';
+import TokensShop from '../views/TokensShop.vue';
+
 const routes = [
   {
     path: '/',
@@ -11,43 +20,43 @@ const routes = [
   {
     path: '/dashboard',
     name: 'Dashboard',
-    component: () => import('../views/Dashboard.vue'),
+    component: Dashboard,
     meta: { requiresAuth: true },
   },
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../views/Login.vue'),
+    component: Login,
     meta: { requiresGuest: true },
   },
   {
     path: '/register',
     name: 'Register',
-    component: () => import('../views/Register.vue'),
+    component: Register,
     meta: { requiresGuest: true },
   },
   {
     path: '/profile',
     name: 'Profile',
-    component: () => import('../views/Profile.vue'),
+    component: Profile,
     meta: { requiresAuth: true },
   },
   {
     path: '/create-route',
     name: 'CreateRoute',
-    component: () => import('../views/CreateRoute.vue'),
+    component: CreateRoute,
     meta: { requiresAuth: true, requiresDriver: true },
   },
   {
     path: '/search-routes',
     name: 'SearchRoutes',
-    component: () => import('../views/SearchRoutes.vue'),
+    component: SearchRoutes,
     meta: { requiresAuth: true },
   },
   {
     path: '/tokens-shop',
     name: 'TokensShop',
-    component: () => import('../views/TokensShop.vue'),
+    component: TokensShop,
     meta: { requiresAuth: true },
   },
 ];
