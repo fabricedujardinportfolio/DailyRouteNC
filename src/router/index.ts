@@ -9,6 +9,12 @@ const routes = [
     component: Home,
   },
   {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: () => import('../views/Dashboard.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('../views/Login.vue'),
@@ -18,7 +24,7 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: () => import('../views/Register.vue'),
-    meta: { requiresGuest: false },
+    meta: { requiresGuest: true },
   },
   {
     path: '/profile',
@@ -60,9 +66,9 @@ router.beforeEach((to, from, next) => {
   if (requiresAuth && !userStore.isAuthenticated) {
     next('/login');
   } else if (requiresGuest && userStore.isAuthenticated) {
-    next('/');
+    next('/dashboard');
   } else if (requiresDriver && !userStore.isDriver) {
-    next('/');
+    next('/dashboard');
   } else {
     next();
   }

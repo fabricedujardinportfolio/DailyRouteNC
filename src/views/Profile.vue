@@ -136,22 +136,37 @@ import { ref, computed, onMounted } from 'vue';
 import { useUserStore } from '../stores/user';
 import type { User, Driver } from '../types/user';
 
+interface ProfileForm {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  profilePicture: string;
+  vehicle: {
+    model: string;
+    color: string;
+    seats: number;
+    licensePlate: string;
+  };
+}
+
 const userStore = useUserStore();
 const loading = computed(() => userStore.loading);
 const error = computed(() => userStore.error);
 const isDriver = computed(() => userStore.isDriver);
 
-const form = ref({
+const defaultVehicle = {
+  model: '',
+  color: '',
+  seats: 1,
+  licensePlate: '',
+};
+
+const form = ref<ProfileForm>({
   name: '',
   email: '',
   phoneNumber: '',
   profilePicture: '',
-  vehicle: {
-    model: '',
-    color: '',
-    seats: 1,
-    licensePlate: '',
-  },
+  vehicle: { ...defaultVehicle },
 });
 
 onMounted(() => {
@@ -162,14 +177,9 @@ onMounted(() => {
       email: user.email,
       phoneNumber: user.phoneNumber || '',
       profilePicture: user.profilePicture || '',
-      vehicle: isDriver.value
-        ? (user as Driver).vehicle
-        : {
-            model: '',
-            color: '',
-            seats: 1,
-            licensePlate: '',
-          },
+      vehicle: isDriver.value && (user as Driver).vehicle
+        ? { ...(user as Driver).vehicle }
+        : { ...defaultVehicle },
     };
   }
 });
@@ -200,14 +210,9 @@ const resetForm = () => {
       email: user.email,
       phoneNumber: user.phoneNumber || '',
       profilePicture: user.profilePicture || '',
-      vehicle: isDriver.value
-        ? (user as Driver).vehicle
-        : {
-            model: '',
-            color: '',
-            seats: 1,
-            licensePlate: '',
-          },
+      vehicle: isDriver.value && (user as Driver).vehicle
+        ? { ...(user as Driver).vehicle }
+        : { ...defaultVehicle },
     };
   }
 };
