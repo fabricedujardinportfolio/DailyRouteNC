@@ -5,6 +5,7 @@ export interface User {
   role: 'driver' | 'walker';
   phoneNumber?: string;
   profilePicture?: string;
+  tokensBalance?: number;
   isVerified: boolean;
   documents: UserDocuments;
 }
@@ -52,6 +53,7 @@ export interface Route {
   price: number;
   frequency: 'daily' | 'weekdays' | 'custom';
   customDays?: string[];
+  driverRating?: number;
 }
 
 export interface GeoPoint {

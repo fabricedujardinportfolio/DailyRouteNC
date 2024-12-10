@@ -6,7 +6,7 @@ import {
   type User as FirebaseUser
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
-import { auth, db } from './firebase';
+import { auth, db } from '../firebaseConfig';
 import type { User } from '../types/user';
 
 export async function register(email: string, password: string, name: string, role: 'driver' | 'walker') {
@@ -20,7 +20,11 @@ export async function register(email: string, password: string, name: string, ro
       name,
       role,
       phoneNumber: '',
-      profilePicture: ''
+      profilePicture: '',
+      isVerified: false,
+      documents: {
+        status: 'pending'
+      }
     };
 
     await setDoc(doc(db, 'users', user.uid), userData);

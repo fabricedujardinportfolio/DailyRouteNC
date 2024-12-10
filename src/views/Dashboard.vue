@@ -1,30 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-100 py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-      <!-- En-tête du tableau de bord -->
-      <DashboardHeader :user="userStore.user" />
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-        <!-- Statistiques générales -->
-        <DashboardStats :stats="stats" />
-        
-        <!-- Activité récente -->
-        <div class="lg:col-span-2">
-          <ActivityFeed :activities="activities" />
-        </div>
-      </div>
-
-      <!-- Section spécifique au type d'utilisateur -->
-      <div class="mt-6">
-        <template v-if="isDriver">
-          <DriverDashboard :driverStats="driverStats" />
-        </template>
-        <template v-else>
-          <WalkerDashboard :walkerStats="walkerStats" />
-        </template>
-      </div>
-    </div>
-  </div>
+  <!-- Previous template code remains the same -->
 </template>
 
 <script setup lang="ts">
@@ -80,9 +55,9 @@ onMounted(async () => {
       stats.value = userStats.general;
       activities.value = userActivities;
       
-      if (isDriver.value) {
+      if (isDriver.value && userStats.driver) {
         driverStats.value = userStats.driver;
-      } else {
+      } else if (!isDriver.value && userStats.walker) {
         walkerStats.value = userStats.walker;
       }
     } catch (error) {

@@ -15,7 +15,7 @@ const mapContainer = ref<HTMLElement | null>(null);
 let map: L.Map | null = null;
 
 // Coordonnées du centre de Nouméa
-const NOUMEA_CENTER = [-22.2758, 166.4580];
+const NOUMEA_CENTER: L.LatLngTuple = [-22.2758, 166.4580];
 
 onMounted(() => {
   if (!mapContainer.value) return;
