@@ -1,19 +1,22 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services' // Ajoute le plugin Google Services ici directement
 
 android {
-    namespace "com.fabrice.dailyroute"
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    namespace "com.company.appname"
+    compileSdk rootProject.ext.compileSdkVersion
+
     defaultConfig {
-        applicationId "com.fabrice.dailyroute"
-        minSdkVersion rootProject.ext.minSdkVersion
+        applicationId "com.company.appname"
+        minSdkVersion 23 // Augmentez cette version à 23 pour résoudre le problème
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
-             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+            ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -34,23 +37,19 @@ dependencies {
     implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
     implementation project(':capacitor-android')
-    implementation platform('com.google.firebase:firebase-bom:32.7.4')
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-messaging'
-    implementation "com.google.android.gms:play-services-location:$playServicesLocationVersion"
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+
+    // Firebase BoM : Gestion des versions des dépendances Firebase
+    implementation platform('com.google.firebase:firebase-bom:33.5.1')
+
+    // Ajouter les services Firebase nécessaires
+    implementation 'com.google.firebase:firebase-analytics' // Analytics, par exemple
+    implementation 'com.google.firebase:firebase-firestore' // Firestore, si tu utilises Firestore
+    implementation 'com.google.firebase:firebase-auth' // Authentification, si tu en as besoin
+    implementation 'com.google.firebase:firebase-database' // Realtime Database, si tu l'utilises
 }
 
 apply from: 'capacitor.build.gradle'
-
-try {
-    def servicesJSON = file('google-services.json')
-    if (servicesJSON.text) {
-        apply plugin: 'com.google.gms.google-services'
-    }
-} catch(Exception e) {
-    logger.warn("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
-}

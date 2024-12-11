@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1013779718441:android:d9a93543b36ea4c336d738",
+        "mobilesdk_app_id": "1:1013779718441:android:dfcb25a4b8b00c7036d738",
         "android_client_info": {
-          "package_name": "com.fabrice.dailyroute"
+          "package_name": "com.company.appname"
         }
       },
       "oauth_client": [],

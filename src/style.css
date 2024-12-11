@@ -29,3 +29,11 @@ body {
   background: transparent;
   border: none;
 }
+
+#modal_add_trajet {
+  z-index: 2;
+}
+
+#recherche_map_trajet {
+  z-index: 1;
+}

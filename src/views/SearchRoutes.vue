@@ -19,7 +19,7 @@
         </div>
 
         <!-- Carte et résultats -->
-        <div class="md:col-span-3 space-y-6">
+        <div id="recherche_map_trajet" class="md:col-span-3 space-y-6">
           <RouteMap />
           
           <!-- Liste des trajets -->

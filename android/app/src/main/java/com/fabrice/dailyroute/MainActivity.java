@@ -1,4 +1,4 @@
-package com.fabrice.dailyroute;
+package com.company.appname;
 
 import com.getcapacitor.BridgeActivity;
 

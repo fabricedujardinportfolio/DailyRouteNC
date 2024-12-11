@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import type { User } from '../types/user';
 import { login, register, signOut, updateUserProfile } from '../services/auth';
-import { auth } from '../firebaseConfig'; // Importez Firebase Auth
-import { onAuthStateChanged } from 'firebase/auth'; // Importez onAuthStateChanged
+import { auth } from '../firebaseConfig';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -17,16 +17,23 @@ export const useUserStore = defineStore('user', {
   },
 
   actions: {
-    // Méthode pour écouter l'état d'authentification
     initAuthListener() {
       onAuthStateChanged(auth, async (firebaseUser) => {
         if (firebaseUser) {
-          // Si un utilisateur est connecté, récupérez ses données supplémentaires (exemple : rôle)
-          const userData = {
+          const userData: User = {
             id: firebaseUser.uid,
             email: firebaseUser.email || '',
             name: firebaseUser.displayName || '',
-            role: 'driver', // Remplacez par une requête Firestore si nécessaire
+            role: 'driver',
+            isVerified: false,
+            documents: {
+              identityCard: undefined,
+              driverLicense: undefined,
+              vehicleRegistration: undefined,
+              insurance: undefined,
+              status: 'pending',
+              rejectionReason: undefined,
+            },
           };
           this.setUser(userData);
         } else {
@@ -39,10 +46,14 @@ export const useUserStore = defineStore('user', {
       this.loading = true;
       this.error = null;
       try {
-        const user = await login(email, password); // Appelle votre service de connexion
+        const user = await login(email, password);
         this.user = user;
-      } catch (error: any) {
-        this.error = error.message;
+      } catch (error) {
+        if (error instanceof Error) {
+          this.error = error.message;
+        } else {
+          this.error = String(error);
+        }
         throw error;
       } finally {
         this.loading = false;
@@ -53,10 +64,14 @@ export const useUserStore = defineStore('user', {
       this.loading = true;
       this.error = null;
       try {
-        const user = await register(email, password, name, role); // Appelle votre service d'inscription
+        const user = await register(email, password, name, role);
         this.user = user;
-      } catch (error: any) {
-        this.error = error.message;
+      } catch (error) {
+        if (error instanceof Error) {
+          this.error = error.message;
+        } else {
+          this.error = String(error);
+        }
         throw error;
       } finally {
         this.loading = false;
@@ -69,10 +84,14 @@ export const useUserStore = defineStore('user', {
       this.loading = true;
       this.error = null;
       try {
-        await updateUserProfile(this.user.id, data); // Appelle votre service de mise à jour
+        await updateUserProfile(this.user.id, data);
         this.user = { ...this.user, ...data };
-      } catch (error: any) {
-        this.error = error.message;
+      } catch (error) {
+        if (error instanceof Error) {
+          this.error = error.message;
+        } else {
+          this.error = String(error);
+        }
         throw error;
       } finally {
         this.loading = false;
@@ -81,10 +100,14 @@ export const useUserStore = defineStore('user', {
 
     async logout() {
       try {
-        await signOut(); // Appelle votre service de déconnexion
+        await signOut();
         this.user = null;
-      } catch (error: any) {
-        this.error = error.message;
+      } catch (error) {
+        if (error instanceof Error) {
+          this.error = error.message;
+        } else {
+          this.error = String(error);
+        }
         throw error;
       }
     },

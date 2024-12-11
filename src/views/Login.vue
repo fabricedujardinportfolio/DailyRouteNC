@@ -43,7 +43,7 @@
           </button>
         </div>
       </form>
-      
+
       <div class="text-center">
         <router-link to="/register" class="text-blue-600 hover:text-blue-500">
           Pas encore de compte ? S'inscrire
@@ -54,28 +54,33 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { auth } from '../firebaseConfig' // Importez l'auth depuis votre configuration Firebase
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import { useRouter } from 'vue-router'
+import { ref } from 'vue';
+import { auth } from '../firebaseConfig'; // Importez l'auth depuis votre configuration Firebase
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useRouter } from 'vue-router';
 
-const email = ref('')
-const password = ref('')
-const router = useRouter()
+const email = ref('');
+const password = ref('');
+const router = useRouter();
 
 const handleLogin = async () => {
   try {
     // Connexion de l'utilisateur avec email et mot de passe
-    const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value)
-    const user = userCredential.user
+    const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
+    const user = userCredential.user;
 
-    console.log('Utilisateur connecté :', user)
+    console.log('Utilisateur connecté :', user);
 
     // Redirigez l'utilisateur vers une page sécurisée (par exemple, le tableau de bord)
-    router.push('/dashboard')
+    router.push('/dashboard');
   } catch (error) {
-    console.error('Erreur lors de la connexion :', error.message)
-    alert('Erreur : ' + error.message)
+    if (error instanceof Error) {
+      console.error('Erreur lors de la connexion :', error.message);
+      alert('Erreur : ' + error.message);
+    } else {
+      console.error('Erreur inconnue lors de la connexion :', error);
+      alert('Une erreur inconnue s\'est produite.');
+    }
   }
-}
+};
 </script>

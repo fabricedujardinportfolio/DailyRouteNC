@@ -69,7 +69,7 @@
           </button>
         </div>
       </form>
-      
+
       <div class="text-center">
         <router-link to="/login" class="text-blue-600 hover:text-blue-500">
           Déjà un compte ? Se connecter
@@ -80,46 +80,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { auth } from '../firebaseConfig' // Importez l'authentification depuis votre configuration Firebase
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { ref } from 'vue';
+import { auth } from '../firebaseConfig'; // Importez l'authentification depuis votre configuration Firebase
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
-const name = ref('')
-const email = ref('')
-const password = ref('')
-const role = ref('')
+const name = ref('');
+const email = ref('');
+const password = ref('');
+const role = ref('');
 
 const handleRegister = async () => {
   try {
     // Création d'un utilisateur avec email et mot de passe
-    const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value)
-    const user = userCredential.user
+    const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
+    const user = userCredential.user;
 
     // Mise à jour du profil utilisateur avec le nom
     await updateProfile(user, {
-      displayName: name.value
-    })
+      displayName: name.value,
+    });
 
-    console.log('Utilisateur inscrit avec succès :', user)
+    console.log('Utilisateur inscrit avec succès :', user);
 
-    // Stocker des données supplémentaires (comme le rôle) dans Firestore si nécessaire
-    // Exemple (facultatif) :
-    /*
-    import { db } from '../firebaseConfig'
-    import { doc, setDoc } from 'firebase/firestore'
-    
-    await setDoc(doc(db, 'users', user.uid), {
-      name: name.value,
-      email: email.value,
-      role: role.value,
-      createdAt: new Date()
-    })
-    */
-
-    alert('Inscription réussie !')
+    alert('Inscription réussie !');
   } catch (error) {
-    console.error('Erreur lors de l\'inscription :', error)
-    alert('Une erreur est survenue : ' + error.message)
+    if (error instanceof Error) {
+      console.error('Erreur lors de l\'inscription :', error.message);
+      alert('Une erreur est survenue : ' + error.message);
+    } else {
+      console.error('Erreur inconnue lors de l\'inscription :', error);
+      alert('Une erreur inconnue s\'est produite.');
+    }
   }
-}
+};
 </script>
