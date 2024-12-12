@@ -27,7 +27,11 @@
             <div class="p-4">
               <h2 class="text-lg font-semibold text-gray-900 mb-4">Trajets disponibles</h2>
               
-              <div v-if="routes.length === 0" class="text-center py-8 text-gray-500">
+              <div v-if="loading" class="text-center py-8">
+                <p class="text-gray-600">Chargement des trajets...</p>
+              </div>
+              
+              <div v-else-if="routes.length === 0" class="text-center py-8 text-gray-500">
                 Aucun trajet ne correspond à vos critères de recherche.
               </div>
               
@@ -35,16 +39,27 @@
                 <div v-for="route in routes" :key="route.id" class="border rounded-lg p-4">
                   <div class="flex justify-between items-start">
                     <div>
-                      <h3 class="font-semibold text-lg">{{ route.startLocation.address }} → {{ route.endLocation.address }}</h3>
-                      <p class="text-gray-600">{{ formatTime(route.departureTime) }}</p>
+                      <h3 class="font-semibold text-lg">
+                        {{ route.startLocation.address }} → {{ route.endLocation.address }}
+                      </h3>
+                      <p class="text-gray-600">
+                        {{ formatDateTime(route.departureTime) }}
+                      </p>
+                      <p class="text-sm text-gray-500 mt-1">
+                        Conducteur: {{ route.driverName }}
+                      </p>
                       <div class="flex items-center mt-2">
                         <span class="text-yellow-400 text-sm">★</span>
-                        <span class="ml-1 text-sm text-gray-600">{{ route.driverRating }}/5</span>
+                        <span class="ml-1 text-sm text-gray-600">
+                          {{ route.driverRating || 'Nouveau' }}
+                        </span>
                       </div>
                     </div>
                     <div class="text-right">
-                      <div class="font-semibold text-lg">{{ route.price }} XPF</div>
-                      <div class="text-sm text-gray-600">{{ route.availableSeats }} places disponibles</div>
+                      <div class="font-semibold text-lg">{{ formatPrice(route.price) }} XPF</div>
+                      <div class="text-sm text-gray-600">
+                        {{ route.availableSeats }} places disponibles
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -65,34 +80,56 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useUserStore } from '../stores/user';
 import RouteMap from '../components/map/RouteMap.vue';
 import RouteFilters from '../components/filters/RouteFilters.vue';
 import AddRouteModal from '../components/routes/AddRouteModal.vue';
+import { addRoute, fetchRoutes } from '../services/routes';
+import { formatPrice } from '../utils/priceCalculator';
 import type { Route } from '../types/user';
 
 const userStore = useUserStore();
 const isDriver = computed(() => userStore.user?.role === 'driver');
 const showAddRouteModal = ref(false);
 const routes = ref<Route[]>([]);
+const loading = ref(false);
+
+const loadRoutes = async () => {
+  loading.value = true;
+  try {
+    routes.value = await fetchRoutes();
+  } catch (error) {
+    console.error('Erreur lors du chargement des trajets:', error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  loadRoutes();
+});
 
 const updateFilters = (newFilters: any) => {
   console.log('Nouveaux filtres:', newFilters);
+  // Implémenter le filtrage des trajets ici
 };
 
 const handleAddRoute = async (routeData: Partial<Route>) => {
   try {
-    // La logique d'ajout sera implémentée plus tard avec Firebase
-    console.log('Nouveau trajet:', routeData);
+    await addRoute(routeData);
     showAddRouteModal.value = false;
+    await loadRoutes(); // Recharger la liste des trajets
   } catch (error) {
     console.error('Erreur lors de l\'ajout du trajet:', error);
   }
 };
 
-const formatTime = (time: string) => {
-  return new Date(time).toLocaleTimeString('fr-FR', {
+const formatDateTime = (dateString: string) => {
+  return new Date(dateString).toLocaleString('fr-FR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
     hour: '2-digit',
     minute: '2-digit'
   });
