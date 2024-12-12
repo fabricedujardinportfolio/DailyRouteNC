@@ -19,8 +19,8 @@
         </div>
 
         <!-- Carte et résultats -->
-        <div id="recherche_map_trajet" class="md:col-span-3 space-y-6">
-          <RouteMap />
+        <div class="md:col-span-3 space-y-6">
+          <RouteMap id="recherche_map_trajet" />
           
           <!-- Liste des trajets -->
           <div class="bg-white rounded-lg shadow-sm">
@@ -40,7 +40,7 @@
                   <div class="flex justify-between items-start">
                     <div>
                       <h3 class="font-semibold text-lg">
-                        {{ route.startLocation.address }} → {{ route.endLocation.address }}
+                        {{ formatLocation(route.startLocation) }} → {{ formatLocation(route.endLocation) }}
                       </h3>
                       <p class="text-gray-600">
                         {{ formatDateTime(route.departureTime) }}
@@ -133,5 +133,10 @@ const formatDateTime = (dateString: string) => {
     hour: '2-digit',
     minute: '2-digit'
   });
+};
+
+const formatLocation = (location: any) => {
+  if (!location) return '';
+  return `${location.commune}${location.province ? ` (${location.province})` : ''}`;
 };
 </script>
