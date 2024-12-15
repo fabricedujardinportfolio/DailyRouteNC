@@ -6,6 +6,9 @@ export interface User {
   phoneNumber?: string;
   profilePicture?: string;
   tokensBalance?: number;
+  totalTrips?: number; // Assurez-vous que cette ligne est présente
+  totalDistance?: number;
+  averageRating?: number;
   isVerified: boolean;
   documents: UserDocuments;
 }
@@ -46,6 +49,7 @@ export interface Walker extends User {
 export interface Route {
   id: string;
   driverId: string;
+  driverName?: string; // Ajoutez cette ligne si nécessaire
   startLocation: GeoPoint;
   endLocation: GeoPoint;
   departureTime: string;
