@@ -24,7 +24,11 @@ export async function register(email: string, password: string, name: string, ro
       isVerified: false,
       documents: {
         status: 'pending'
-      }
+      },
+      tokensBalance: 0,
+      totalTrips: 0,
+      totalDistance: 0,
+      averageRating: 0
     };
 
     await setDoc(doc(db, 'users', user.uid), userData);
@@ -38,6 +42,11 @@ export async function login(email: string, password: string) {
   try {
     const { user } = await signInWithEmailAndPassword(auth, email, password);
     const userDoc = await getDoc(doc(db, 'users', user.uid));
+    
+    if (!userDoc.exists()) {
+      throw new Error('Utilisateur non trouvé dans la base de données');
+    }
+    
     return userDoc.data() as User;
   } catch (error: any) {
     throw new Error(error.message);
@@ -62,5 +71,18 @@ export async function updateUserProfile(userId: string, data: Partial<User>) {
     }
   } catch (error: any) {
     throw new Error(error.message);
+  }
+}
+
+export async function getCurrentUser(): Promise<User | null> {
+  if (!auth.currentUser) return null;
+  
+  try {
+    const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+    if (!userDoc.exists()) return null;
+    return userDoc.data() as User;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données utilisateur:', error);
+    return null;
   }
 }

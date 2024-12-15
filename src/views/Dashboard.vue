@@ -1,5 +1,28 @@
 <template>
-  <!-- Previous template code remains the same -->
+  <div class="min-h-screen bg-gray-100 py-12">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+      <DashboardHeader :user="userStore.user" />
+      
+      <div v-if="loading" class="text-center py-8">
+        <p class="text-gray-600">Chargement du tableau de bord...</p>
+      </div>
+      
+      <template v-else>
+        <DashboardStats :stats="stats" />
+        <ActivityFeed :activities="activities" />
+        
+        <DriverDashboard
+          v-if="isDriver"
+          :driver-stats="driverStats"
+        />
+        
+        <WalkerDashboard
+          v-else
+          :walker-stats="walkerStats"
+        />
+      </template>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -16,6 +39,7 @@ import type { DashboardStats as DashboardStatsType, Activity, DriverStats, Walke
 
 const userStore = useUserStore();
 const isDriver = computed(() => userStore.isDriver);
+const loading = ref(true);
 
 const stats = ref<DashboardStatsType>({
   totalTrips: 0,
@@ -45,24 +69,30 @@ const walkerStats = ref<WalkerStats>({
 });
 
 onMounted(async () => {
-  if (userStore.user) {
-    try {
-      const [userStats, userActivities] = await Promise.all([
-        fetchUserStats(userStore.user.id),
-        fetchUserActivities(userStore.user.id)
-      ]);
-      
-      stats.value = userStats.general;
-      activities.value = userActivities;
-      
-      if (isDriver.value && userStats.driver) {
-        driverStats.value = userStats.driver;
-      } else if (!isDriver.value && userStats.walker) {
-        walkerStats.value = userStats.walker;
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement des données du tableau de bord:', error);
+  if (!userStore.user) {
+    loading.value = false;
+    return;
+  }
+
+  try {
+    loading.value = true;
+    const [userStats, userActivities] = await Promise.all([
+      fetchUserStats(userStore.user.id),
+      fetchUserActivities(userStore.user.id)
+    ]);
+    
+    stats.value = userStats.general;
+    activities.value = userActivities;
+    
+    if (isDriver.value && userStats.driver) {
+      driverStats.value = userStats.driver;
+    } else if (!isDriver.value && userStats.walker) {
+      walkerStats.value = userStats.walker;
     }
+  } catch (error) {
+    console.error('Erreur lors du chargement des données du tableau de bord:', error);
+  } finally {
+    loading.value = false;
   }
 });
 </script>
