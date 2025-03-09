@@ -16,6 +16,7 @@
     "@capacitor/ios": "^5.7.0",
     "@firebasegen/default-connector": "file:dataconnect-generated/js/default-connector",
     "@headlessui/vue": "^1.7.19",
+    "@supabase/supabase-js": "^2.39.7",
     "@vueuse/core": "^10.9.0",
     "autoprefixer": "^10.4.17",
     "firebase": "^10.14.1",
