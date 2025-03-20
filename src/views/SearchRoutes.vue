@@ -40,25 +40,25 @@
                   <div class="flex justify-between items-start">
                     <div>
                       <h3 class="font-semibold text-lg">
-                        {{ formatLocation(route.startLocation) }} → {{ formatLocation(route.endLocation) }}
+                        {{ formatLocation(route.start_location) }} → {{ formatLocation(route.end_location) }}
                       </h3>
                       <p class="text-gray-600">
-                        {{ formatDateTime(route.departureTime) }}
+                        {{ formatDateTime(route.departure_time) }}
                       </p>
                       <p class="text-sm text-gray-500 mt-1">
-                        Conducteur: {{ route.driverName }}
+                        Conducteur: {{ route.driver_name }}
                       </p>
                       <div class="flex items-center mt-2">
                         <span class="text-yellow-400 text-sm">★</span>
                         <span class="ml-1 text-sm text-gray-600">
-                          {{ route.driverRating || 'Nouveau' }}
+                          {{ route.driver_rating || 'Nouveau' }}
                         </span>
                       </div>
                     </div>
                     <div class="text-right">
                       <div class="font-semibold text-lg">{{ formatPrice(route.price) }} XPF</div>
                       <div class="text-sm text-gray-600">
-                        {{ route.availableSeats }} places disponibles
+                        {{ route.available_seats }} places disponibles
                       </div>
                     </div>
                   </div>
@@ -137,6 +137,9 @@ const formatDateTime = (dateString: string) => {
 
 const formatLocation = (location: any) => {
   if (!location) return '';
-  return `${location.commune}${location.province ? ` (${location.province})` : ''}`;
+  const province = location.province_id;
+  const commune = location.commune_id;
+  const quartier = location.quartier_id;
+  return `${commune}${quartier ? `, ${quartier}` : ''}${province ? ` (${province})` : ''}`;
 };
 </script>

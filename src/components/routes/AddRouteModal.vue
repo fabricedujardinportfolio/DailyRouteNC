@@ -36,7 +36,45 @@
                     Point de départ
                   </label>
                   <div class="space-y-4">
-                    <LocationSelector v-model="form.startLocation" />
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700">Province</label>
+                      <select
+                        v-model="form.startLocation.province"
+                        required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      >
+                        <option v-for="province in provinces" :key="province.id" :value="province.id">
+                          {{ province.name }}
+                        </option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700">Commune</label>
+                      <select
+                        v-model="form.startLocation.commune"
+                        required
+                        :disabled="!form.startLocation.province"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      >
+                        <option value="">Sélectionnez une commune</option>
+                        <option v-for="commune in startCommunes" :key="commune.id" :value="commune.id">
+                          {{ commune.name }}
+                        </option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700">Quartier</label>
+                      <select
+                        v-model="form.startLocation.quartier"
+                        :disabled="!form.startLocation.commune"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      >
+                        <option value="">Sélectionnez un quartier (optionnel)</option>
+                        <option v-for="quartier in startQuartiers" :key="quartier.id" :value="quartier.id">
+                          {{ quartier.name }}
+                        </option>
+                      </select>
+                    </div>
                     <input
                       v-model="form.departureTime"
                       type="datetime-local"
@@ -52,7 +90,45 @@
                     Point d'arrivée
                   </label>
                   <div class="space-y-4">
-                    <LocationSelector v-model="form.endLocation" />
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700">Province</label>
+                      <select
+                        v-model="form.endLocation.province"
+                        required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      >
+                        <option v-for="province in provinces" :key="province.id" :value="province.id">
+                          {{ province.name }}
+                        </option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700">Commune</label>
+                      <select
+                        v-model="form.endLocation.commune"
+                        required
+                        :disabled="!form.endLocation.province"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      >
+                        <option value="">Sélectionnez une commune</option>
+                        <option v-for="commune in endCommunes" :key="commune.id" :value="commune.id">
+                          {{ commune.name }}
+                        </option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700">Quartier</label>
+                      <select
+                        v-model="form.endLocation.quartier"
+                        :disabled="!form.endLocation.commune"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      >
+                        <option value="">Sélectionnez un quartier (optionnel)</option>
+                        <option v-for="quartier in endQuartiers" :key="quartier.id" :value="quartier.id">
+                          {{ quartier.name }}
+                        </option>
+                      </select>
+                    </div>
                     <input
                       v-model="form.estimatedArrivalTime"
                       type="datetime-local"
@@ -135,9 +211,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useUserStore } from '../../stores/user';
-import LocationSelector from '../location/LocationSelector.vue';
 import {
   Dialog,
   DialogPanel,
@@ -145,10 +220,13 @@ import {
   TransitionChild,
   TransitionRoot,
 } from '@headlessui/vue';
+import { fetchProvinces, fetchCommunes, fetchQuartiers, type Province, type Commune, type Quartier } from '../../services/supabase/reference';
+import { addRoute } from '../../services/supabase/routes';
 
 interface LocationForm {
   province: string;
   commune: string;
+  quartier?: string;
 }
 
 interface RouteForm {
@@ -165,9 +243,36 @@ const userStore = useUserStore();
 const loading = ref(false);
 const error = ref('');
 
+// Données de référence
+const provinces = ref<Province[]>([]);
+const communes = ref<Commune[]>([]);
+const quartiers = ref<Quartier[]>([]);
+
+// Chargement des données de référence
+onMounted(async () => {
+  try {
+    const [provincesData, communesData, quartiersData] = await Promise.all([
+      fetchProvinces(),
+      fetchCommunes(),
+      fetchQuartiers()
+    ]);
+    provinces.value = provincesData;
+    communes.value = communesData;
+    quartiers.value = quartiersData;
+    
+    // Définir la première province comme valeur par défaut
+    if (provincesData.length > 0) {
+      form.value.startLocation.province = provincesData[0].id;
+      form.value.endLocation.province = provincesData[0].id;
+    }
+  } catch (error) {
+    console.error('Erreur lors du chargement des données de référence:', error);
+  }
+});
+
 const form = ref<RouteForm>({
-  startLocation: { province: '', commune: '' },
-  endLocation: { province: '', commune: '' },
+  startLocation: { province: '', commune: '', quartier: '' },
+  endLocation: { province: '', commune: '', quartier: '' },
   departureTime: '',
   estimatedArrivalTime: '',
   availableSeats: 1,
@@ -179,6 +284,46 @@ const emit = defineEmits<{
   (e: 'close'): void;
   (e: 'submit', data: any): void;
 }>();
+
+// Computed properties pour filtrer les communes et quartiers
+const startCommunes = computed(() => {
+  if (!form.value.startLocation.province) return [];
+  return communes.value.filter(c => c.province_id === form.value.startLocation.province);
+});
+
+const startQuartiers = computed(() => {
+  if (!form.value.startLocation.commune) return [];
+  return quartiers.value.filter(q => q.commune_id === form.value.startLocation.commune);
+});
+
+const endCommunes = computed(() => {
+  if (!form.value.endLocation.province) return [];
+  return communes.value.filter(c => c.province_id === form.value.endLocation.province);
+});
+
+const endQuartiers = computed(() => {
+  if (!form.value.endLocation.commune) return [];
+  return quartiers.value.filter(q => q.commune_id === form.value.endLocation.commune);
+});
+
+// Reset des sélections dépendantes
+watch(() => form.value.startLocation.province, () => {
+  form.value.startLocation.commune = '';
+  form.value.startLocation.quartier = '';
+});
+
+watch(() => form.value.startLocation.commune, () => {
+  form.value.startLocation.quartier = '';
+});
+
+watch(() => form.value.endLocation.province, () => {
+  form.value.endLocation.commune = '';
+  form.value.endLocation.quartier = '';
+});
+
+watch(() => form.value.endLocation.commune, () => {
+  form.value.endLocation.quartier = '';
+});
 
 const handleSubmit = async () => {
   if (!userStore.user) return;
@@ -205,16 +350,16 @@ const handleSubmit = async () => {
       driverName: userStore.user.name,
       startLocation: form.value.startLocation,
       endLocation: form.value.endLocation,
-      departureTime: new Date(form.value.departureTime).toISOString(),
-      estimatedArrivalTime: new Date(form.value.estimatedArrivalTime).toISOString(),
+      departureTime: form.value.departureTime,
+      estimatedArrivalTime: form.value.estimatedArrivalTime,
       availableSeats: form.value.availableSeats,
       price: form.value.price,
-      comments: form.value.comments,
-      status: 'active',
-      createdAt: new Date().toISOString()
+      comments: form.value.comments
     };
 
-    emit('submit', routeData);
+    const newRoute = await addRoute(routeData);
+    emit('submit', newRoute);
+    emit('close');
   } catch (err) {
     if (err instanceof Error) {
       error.value = err.message;

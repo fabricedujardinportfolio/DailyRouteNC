@@ -10,9 +10,9 @@
         class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
       >
         <option value="">Toutes les provinces</option>
-        <option value="sud">Province Sud</option>
-        <option value="nord">Province Nord</option>
-        <option value="iles">Province des Îles</option>
+        <option v-for="province in provinces" :key="province.id" :value="province.id">
+          {{ province.name }}
+        </option>
       </select>
     </div>
 
@@ -24,8 +24,8 @@
         class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
       >
         <option value="">Toutes les communes</option>
-        <option v-for="commune in communes" :key="commune" :value="commune">
-          {{ commune }}
+        <option v-for="commune in filteredCommunes" :key="commune.id" :value="commune.id">
+          {{ commune.name }}
         </option>
       </select>
     </div>
@@ -38,8 +38,8 @@
         class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
       >
         <option value="">Tous les quartiers</option>
-        <option v-for="quartier in quartiers" :key="quartier" :value="quartier">
-          {{ quartier }}
+        <option v-for="quartier in filteredQuartiers" :key="quartier.id" :value="quartier.id">
+          {{ quartier.name }}
         </option>
       </select>
     </div>
@@ -71,7 +71,8 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from 'vue';
+import { ref, reactive, watch, onMounted, computed } from 'vue';
+import { fetchProvinces, fetchCommunes, fetchQuartiers, type Province, type Commune, type Quartier } from '../../services/supabase/reference';
 
 interface RouteFilters {
   province: string;
@@ -80,84 +81,44 @@ interface RouteFilters {
   minRating: number;
 }
 
-const communes = [
-  'Nouméa',
-  'Mont-Dore',
-  'Dumbéa',
-  'Païta',
-  'Yaté',
-  'Thio',
-  'Boulouparis',
-  'La Foa',
-  'Sarraméa',
-  'Farino',
-  'Moindou',
-  'Bourail',
-  'Poya',
-  'Pouembout',
-  'Koné',
-  'Voh',
-  'Kaala-Gomen',
-  'Koumac',
-  'Poum',
-  'Belep',
-  'Ouégoa',
-  'Pouébo',
-  'Hienghène',
-  'Touho',
-  'Poindimié',
-  'Ponérihouen',
-  'Houaïlou',
-  'Canala',
-  'Kouaoua',
-  'Lifou',
-  'Maré',
-  'Ouvéa',
-  'Île des Pins'
-];
-
-const quartiers = [
-  'Vallée des Colons',
-  'Faubourg Blanchot',
-  'Quartier Latin',
-  'Centre Ville',
-  'Vallée du Tir',
-  'Montravel',
-  'Rivière Salée',
-  'Tina',
-  'Magenta',
-  'Aérodrome',
-  'Anse Vata',
-  'Baie des Citrons',
-  'Motor Pool',
-  'Receiving',
-  'Artillerie',
-  'Orphelinat',
-  'N\'Géa',
-  'Ouémo',
-  'Portes de Fer',
-  'Haut-Magenta',
-  'PK4',
-  'PK6',
-  'PK7',
-  'Koutio',
-  'Auteuil',
-  'Normandie',
-  'Yahoué',
-  'Robinson',
-  'Boulari',
-  'La Coulée'
-];
-
 const emit = defineEmits<{
   (e: 'update:filters', filters: RouteFilters): void;
 }>();
+
+const provinces = ref<Province[]>([]);
+const communes = ref<Commune[]>([]);
+const quartiers = ref<Quartier[]>([]);
 
 const filters = reactive<RouteFilters>({
   province: '',
   commune: '',
   quartier: '',
   minRating: 0
+});
+
+const filteredCommunes = computed(() => {
+  if (!filters.province) return communes.value;
+  return communes.value.filter(c => c.province_id === filters.province);
+});
+
+const filteredQuartiers = computed(() => {
+  if (!filters.commune) return quartiers.value;
+  return quartiers.value.filter(q => q.commune_id === filters.commune);
+});
+
+onMounted(async () => {
+  try {
+    const [provincesData, communesData, quartiersData] = await Promise.all([
+      fetchProvinces(),
+      fetchCommunes(),
+      fetchQuartiers()
+    ]);
+    provinces.value = provincesData;
+    communes.value = communesData;
+    quartiers.value = quartiersData;
+  } catch (error) {
+    console.error('Erreur lors du chargement des données de référence:', error);
+  }
 });
 
 watch(filters, (newFilters) => {
