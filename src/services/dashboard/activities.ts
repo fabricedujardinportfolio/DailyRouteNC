@@ -1,28 +1,17 @@
-import { db } from '../firebase';
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  limit,
-  getDocs
-} from 'firebase/firestore';
+import { supabase } from '../../services/supabase';
 import type { Activity } from '../../types/dashboard';
 
 export async function fetchUserActivities(userId: string): Promise<Activity[]> {
   try {
-    const activitiesQuery = query(
-      collection(db, 'activities'),
-      where('userId', '==', userId),
-      orderBy('date', 'desc'),
-      limit(10)
-    );
+    const { data: activities, error } = await supabase
+      .from('activities')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(10);
 
-    const snapshot = await getDocs(activitiesQuery);
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as Activity[];
+    if (error) throw error;
+    return activities || [];
   } catch (error) {
     console.error('Erreur lors de la récupération des activités:', error);
     throw error;

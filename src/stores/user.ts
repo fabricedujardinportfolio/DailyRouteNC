@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia';
 import type { User } from '../types/user';
-import { login, register, signOut, updateUserProfile } from '../services/auth';
-import { auth } from '../firebaseConfig';
-import { onAuthStateChanged } from 'firebase/auth';
+import { supabase } from '../services/supabase';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -18,14 +16,14 @@ export const useUserStore = defineStore('user', {
 
   actions: {
     initAuthListener() {
-      onAuthStateChanged(auth, async (firebaseUser) => {
-        if (firebaseUser) {
-          const userData: User = {
-            id: firebaseUser.uid,
-            email: firebaseUser.email || '',
-            name: firebaseUser.displayName || '',
-            role: 'driver',
-            isVerified: false,
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          this.setUser({
+            id: session.user.id,
+            email: session.user.email || '',
+            name: session.user.user_metadata?.name || '',
+            role: session.user.user_metadata?.role || 'walker',
+            isVerified: session.user.email_confirmed_at !== null,
             documents: {
               identityCard: undefined,
               driverLicense: undefined,
@@ -34,8 +32,7 @@ export const useUserStore = defineStore('user', {
               status: 'pending',
               rejectionReason: undefined,
             },
-          };
-          this.setUser(userData);
+          });
         } else {
           this.setUser(null);
         }
@@ -46,14 +43,30 @@ export const useUserStore = defineStore('user', {
       this.loading = true;
       this.error = null;
       try {
-        const user = await login(email, password);
-        this.user = user;
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) throw error;
+        
+        this.setUser({
+          id: data.user?.id,
+          email: data.user?.email || '',
+          name: data.user?.user_metadata?.name || '',
+          role: data.user?.user_metadata?.role || 'walker',
+          isVerified: data.user?.email_confirmed_at !== null,
+          documents: {
+            identityCard: undefined,
+            driverLicense: undefined,
+            vehicleRegistration: undefined,
+            insurance: undefined,
+            status: 'pending',
+            rejectionReason: undefined,
+          },
+        });
       } catch (error) {
-        if (error instanceof Error) {
-          this.error = error.message;
-        } else {
-          this.error = String(error);
-        }
+        this.error = error.message;
         throw error;
       } finally {
         this.loading = false;
@@ -64,14 +77,36 @@ export const useUserStore = defineStore('user', {
       this.loading = true;
       this.error = null;
       try {
-        const user = await register(email, password, name, role);
-        this.user = user;
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              name,
+              role
+            }
+          }
+        });
+
+        if (error) throw error;
+        
+        this.setUser({
+          id: data.user?.id,
+          email: data.user?.email || '',
+          name: data.user?.user_metadata?.name || '',
+          role: data.user?.user_metadata?.role || 'walker',
+          isVerified: data.user?.email_confirmed_at !== null,
+          documents: {
+            identityCard: undefined,
+            driverLicense: undefined,
+            vehicleRegistration: undefined,
+            insurance: undefined,
+            status: 'pending',
+            rejectionReason: undefined,
+          },
+        });
       } catch (error) {
-        if (error instanceof Error) {
-          this.error = error.message;
-        } else {
-          this.error = String(error);
-        }
+        this.error = error.message;
         throw error;
       } finally {
         this.loading = false;
@@ -79,19 +114,26 @@ export const useUserStore = defineStore('user', {
     },
 
     async updateProfile(data: Partial<User>) {
-      if (!this.user) return;
-
       this.loading = true;
       this.error = null;
       try {
-        await updateUserProfile(this.user.id, data);
-        this.user = { ...this.user, ...data };
+        const { data: updatedUser, error } = await supabase.auth.updateUser({
+          data: {
+            ...data,
+            role: data.role || this.user?.role
+          }
+        });
+
+        if (error) throw error;
+
+        this.setUser({
+          ...this.user,
+          ...data,
+          name: updatedUser.user?.user_metadata?.name || this.user?.name,
+          role: updatedUser.user?.user_metadata?.role || this.user?.role
+        });
       } catch (error) {
-        if (error instanceof Error) {
-          this.error = error.message;
-        } else {
-          this.error = String(error);
-        }
+        this.error = error.message;
         throw error;
       } finally {
         this.loading = false;
@@ -100,20 +142,17 @@ export const useUserStore = defineStore('user', {
 
     async logout() {
       try {
-        await signOut();
-        this.user = null;
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        this.setUser(null);
       } catch (error) {
-        if (error instanceof Error) {
-          this.error = error.message;
-        } else {
-          this.error = String(error);
-        }
+        this.error = error.message;
         throw error;
       }
     },
 
     setUser(user: User | null) {
       this.user = user;
-    },
+    }
   },
 });

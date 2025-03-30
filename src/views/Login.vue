@@ -38,8 +38,10 @@
           <button
             type="submit"
             class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            :disabled="loading"
           >
-            Se connecter
+            <span v-if="!loading">Se connecter</span>
+            <span v-else>Connexion en cours...</span>
           </button>
         </div>
       </form>
@@ -55,32 +57,35 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { auth } from '../firebaseConfig'; // Importez l'auth depuis votre configuration Firebase
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { supabase } from '../services/supabase';
 import { useRouter } from 'vue-router';
 
 const email = ref('');
 const password = ref('');
+const loading = ref(false);
 const router = useRouter();
 
 const handleLogin = async () => {
   try {
-    // Connexion de l'utilisateur avec email et mot de passe
-    const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
-    const user = userCredential.user;
+    loading.value = true;
+    
+    // Connexion avec Supabase
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.value,
+      password: password.value
+    });
 
-    console.log('Utilisateur connecté :', user);
+    if (error) throw error;
 
-    // Redirigez l'utilisateur vers une page sécurisée (par exemple, le tableau de bord)
+    console.log('Utilisateur connecté :', data.user);
+
+    // Redirigez l'utilisateur vers le tableau de bord
     router.push('/dashboard');
   } catch (error) {
-    if (error instanceof Error) {
-      console.error('Erreur lors de la connexion :', error.message);
-      alert('Erreur : ' + error.message);
-    } else {
-      console.error('Erreur inconnue lors de la connexion :', error);
-      alert('Une erreur inconnue s\'est produite.');
-    }
+    console.error('Erreur lors de la connexion :', error);
+    alert('Erreur : ' + error.message);
+  } finally {
+    loading.value = false;
   }
 };
 </script>

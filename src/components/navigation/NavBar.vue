@@ -71,6 +71,12 @@
               class="absolute right-0 mt-2 w-full md:w-auto bg-white rounded-md shadow-lg py-1 z-[100]"
             >
               <router-link
+                to="/dashboard"
+                class="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+              >
+                Tableau de bord
+              </router-link>
+              <router-link
                 to="/profile"
                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100"
               >

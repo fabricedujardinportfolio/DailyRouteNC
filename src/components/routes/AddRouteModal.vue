@@ -213,6 +213,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useUserStore } from '../../stores/user';
+import { auth } from '../../firebaseConfig';
 import {
   Dialog,
   DialogPanel,
@@ -247,8 +248,17 @@ const error = ref('');
 const provinces = ref<Province[]>([]);
 const communes = ref<Commune[]>([]);
 const quartiers = ref<Quartier[]>([]);
+const form = ref<RouteForm>({
+  startLocation: { province: '', commune: '', quartier: '' },
+  endLocation: { province: '', commune: '', quartier: '' },
+  departureTime: '',
+  estimatedArrivalTime: '',
+  availableSeats: 1,
+  price: 0,
+  comments: ''
+});
 
-// Chargement des données de référence
+// Chargement des données de référence et vérification de l'authentification
 onMounted(async () => {
   try {
     const [provincesData, communesData, quartiersData] = await Promise.all([
@@ -268,17 +278,80 @@ onMounted(async () => {
   } catch (error) {
     console.error('Erreur lors du chargement des données de référence:', error);
   }
+
+  // Vérification de l'authentification
+  if (!auth.currentUser) {
+    error.value = 'Veuillez vous connecter pour ajouter un trajet';
+  }
 });
 
-const form = ref<RouteForm>({
-  startLocation: { province: '', commune: '', quartier: '' },
-  endLocation: { province: '', commune: '', quartier: '' },
-  departureTime: '',
-  estimatedArrivalTime: '',
-  availableSeats: 1,
-  price: 0,
-  comments: ''
-});
+// Fonction pour gérer la soumission
+const handleSubmit = async () => {
+  if (!auth.currentUser) {
+    error.value = 'Veuillez vous connecter pour ajouter un trajet';
+    return;
+  }
+
+  loading.value = true;
+  error.value = '';
+
+  try {
+    // Validation des données
+    if (!form.value.startLocation.commune || !form.value.endLocation.commune) {
+      throw new Error('Veuillez sélectionner les lieux de départ et d\'arrivée');
+    }
+
+    if (new Date(form.value.departureTime) <= new Date()) {
+      throw new Error('La date de départ doit être dans le futur');
+    }
+
+    if (new Date(form.value.estimatedArrivalTime) <= new Date(form.value.departureTime)) {
+      throw new Error('L\'heure d\'arrivée estimée doit être après l\'heure de départ');
+    }
+
+    // Convertir les Proxys en objets simples
+    const startLocation = {
+      province: form.value.startLocation.province,
+      commune: form.value.startLocation.commune,
+      quartier: form.value.startLocation.quartier
+    };
+
+    const endLocation = {
+      province: form.value.endLocation.province,
+      commune: form.value.endLocation.commune,
+      quartier: form.value.endLocation.quartier
+    };
+
+    const routeData = {
+      driverId: auth.currentUser.uid,
+      driverName: auth.currentUser.displayName || '',
+      startLocation,
+      endLocation,
+      departureTime: form.value.departureTime,
+      estimatedArrivalTime: form.value.estimatedArrivalTime,
+      availableSeats: form.value.availableSeats,
+      price: form.value.price,
+      comments: form.value.comments
+    };
+
+    console.log('ID utilisateur authentifié:', auth.currentUser.uid);
+    console.log('ID conducteur:', routeData.driverId);
+    console.log('Données envoyées à addRoute:', routeData);
+
+    const newRoute = await addRoute(routeData);
+    emit('submit', newRoute);
+    emit('close');
+  } catch (err) {
+    if (err instanceof Error) {
+      error.value = err.message;
+    } else {
+      error.value = 'Une erreur est survenue lors de la création du trajet';
+    }
+    console.error('Erreur lors de la création du trajet:', err);
+  } finally {
+    loading.value = false;
+  }
+};
 
 const emit = defineEmits<{
   (e: 'close'): void;
@@ -324,51 +397,4 @@ watch(() => form.value.endLocation.province, () => {
 watch(() => form.value.endLocation.commune, () => {
   form.value.endLocation.quartier = '';
 });
-
-const handleSubmit = async () => {
-  if (!userStore.user) return;
-
-  loading.value = true;
-  error.value = '';
-
-  try {
-    // Validation des données
-    if (!form.value.startLocation.commune || !form.value.endLocation.commune) {
-      throw new Error('Veuillez sélectionner les lieux de départ et d\'arrivée');
-    }
-
-    if (new Date(form.value.departureTime) <= new Date()) {
-      throw new Error('La date de départ doit être dans le futur');
-    }
-
-    if (new Date(form.value.estimatedArrivalTime) <= new Date(form.value.departureTime)) {
-      throw new Error('L\'heure d\'arrivée estimée doit être après l\'heure de départ');
-    }
-
-    const routeData = {
-      driverId: userStore.user.id,
-      driverName: userStore.user.name,
-      startLocation: form.value.startLocation,
-      endLocation: form.value.endLocation,
-      departureTime: form.value.departureTime,
-      estimatedArrivalTime: form.value.estimatedArrivalTime,
-      availableSeats: form.value.availableSeats,
-      price: form.value.price,
-      comments: form.value.comments
-    };
-
-    const newRoute = await addRoute(routeData);
-    emit('submit', newRoute);
-    emit('close');
-  } catch (err) {
-    if (err instanceof Error) {
-      error.value = err.message;
-    } else {
-      error.value = 'Une erreur est survenue lors de la création du trajet';
-    }
-    console.error('Erreur lors de la création du trajet:', err);
-  } finally {
-    loading.value = false;
-  }
-};
 </script>

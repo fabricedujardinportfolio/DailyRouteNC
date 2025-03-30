@@ -54,8 +54,9 @@
               class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
             >
               <option value="">Sélectionnez votre rôle</option>
-              <option value="driver">Conducteur</option>
-              <option value="walker">Marcheur</option>
+              <option v-for="r in roles" :key="r.id" :value="r.name">
+                {{ r.description || r.name }}
+              </option>
             </select>
           </div>
         </div>
@@ -64,8 +65,10 @@
           <button
             type="submit"
             class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            :disabled="loading"
           >
-            S'inscrire
+            <span v-if="!loading">S'inscrire</span>
+            <span v-else>Inscription en cours...</span>
           </button>
         </div>
       </form>
@@ -80,37 +83,89 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { auth } from '../firebaseConfig'; // Importez l'authentification depuis votre configuration Firebase
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { ref, onMounted } from 'vue';
+import { supabase } from '../services/supabase';
+import { useRouter } from 'vue-router';
+import type { Role } from '../types/role';
+
+const router = useRouter();
 
 const name = ref('');
 const email = ref('');
 const password = ref('');
 const role = ref('');
+const loading = ref(false);
+const roles = ref<Role[]>([]);
+
+const fetchRoles = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('roles')
+      .select('*')
+      .order('name');
+
+    if (error) throw error;
+    roles.value = data || [];
+  } catch (error) {
+    console.error('Erreur lors de la récupération des rôles:', error);
+  }
+};
+
+onMounted(() => {
+  fetchRoles();
+});
 
 const handleRegister = async () => {
   try {
-    // Création d'un utilisateur avec email et mot de passe
-    const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
-    const user = userCredential.user;
-
-    // Mise à jour du profil utilisateur avec le nom
-    await updateProfile(user, {
-      displayName: name.value,
+    loading.value = true;
+    
+    // Création d'un utilisateur avec Supabase
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: email.value,
+      password: password.value,
+      options: {
+        data: {
+          name: name.value
+        }
+      }
     });
 
-    console.log('Utilisateur inscrit avec succès :', user);
+    if (authError) throw authError;
 
-    alert('Inscription réussie !');
+    console.log('Utilisateur créé :', authData.user);
+
+    // Récupérer l'ID du rôle
+    const { data: roleData, error: roleError } = await supabase
+      .from('roles')
+      .select('id')
+      .eq('name', role.value)
+      .single();
+
+    if (roleError) throw roleError;
+    if (!roleData) throw new Error(`Rôle ${role.value} non trouvé`);
+
+    // Ajouter l'utilisateur à la table user_roles
+    const { data: userRoleData, error: userRoleError } = await supabase
+      .from('user_roles')
+      .insert([
+        {
+          user_id: authData.user.id,
+          role_id: roleData.id
+        }
+      ])
+      .select();
+
+    if (userRoleError) throw userRoleError;
+
+    console.log('Rôle ajouté :', userRoleData);
+
+    // Rediriger vers la page de connexion
+    router.push('/login');
   } catch (error) {
-    if (error instanceof Error) {
-      console.error('Erreur lors de l\'inscription :', error.message);
-      alert('Une erreur est survenue : ' + error.message);
-    } else {
-      console.error('Erreur inconnue lors de l\'inscription :', error);
-      alert('Une erreur inconnue s\'est produite.');
-    }
+    console.error('Erreur lors de l\'inscription :', error);
+    alert('Erreur : ' + error.message);
+  } finally {
+    loading.value = false;
   }
 };
 </script>
