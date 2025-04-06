@@ -1,4 +1,4 @@
-import { supabase } from '../../services/supabase';
+import { supabase } from '../supabase';
 import type { Activity } from '../../types/dashboard';
 
 export async function fetchUserActivities(userId: string): Promise<Activity[]> {

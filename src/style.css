@@ -19,17 +19,15 @@ body {
   margin: 0 auto;
 }
 
-/* Styles pour Leaflet */
-.leaflet-container {
-  height: 100%;
-  width: 100%;
+/* Dialog z-index fixes */
+.fixed.inset-0.bg-black.bg-opacity-25 {
+  z-index: 800;
 }
 
-.leaflet-div-icon {
-  background: transparent;
-  border: none;
+.fixed.inset-0.overflow-y-auto {
+  z-index: 800;
 }
 
-#recherche_map_trajet {
-  z-index: 1;
+.dialog-panel {
+  z-index: 850;
 }

@@ -19,10 +19,11 @@
               </div>
               <p class="text-gray-600 mb-6">Idéal pour commencer</p>
               <button
-                @click="handlePurchase(10, calculatePriceWithCommission(1200))"
-                class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                @click="handlePurchase(10)"
+                :disabled="loading"
+                class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
               >
-                Acheter
+                {{ loading ? 'Traitement...' : 'Acheter' }}
               </button>
             </div>
 
@@ -38,10 +39,11 @@
               </div>
               <p class="text-gray-600 mb-6">Notre meilleure vente</p>
               <button
-                @click="handlePurchase(100, calculatePriceWithCommission(12000))"
-                class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                @click="handlePurchase(100)"
+                :disabled="loading"
+                class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
               >
-                Acheter
+                {{ loading ? 'Traitement...' : 'Acheter' }}
               </button>
             </div>
 
@@ -57,10 +59,11 @@
               </div>
               <p class="text-gray-600 mb-6">Pour les utilisateurs réguliers</p>
               <button
-                @click="handlePurchase(1000, calculatePriceWithCommission(120000))"
-                class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                @click="handlePurchase(1000)"
+                :disabled="loading"
+                class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
               >
-                Acheter
+                {{ loading ? 'Traitement...' : 'Acheter' }}
               </button>
             </div>
           </div>
@@ -98,9 +101,10 @@
               </ul>
               <button
                 @click="handleSubscription('monthly')"
-                class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                :disabled="loading"
+                class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
               >
-                Souscrire
+                {{ loading ? 'Traitement...' : 'Souscrire' }}
               </button>
             </div>
 
@@ -128,9 +132,10 @@
               </ul>
               <button
                 @click="handleSubscription('sixMonths')"
-                class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                :disabled="loading"
+                class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
               >
-                Souscrire
+                {{ loading ? 'Traitement...' : 'Souscrire' }}
               </button>
             </div>
 
@@ -159,9 +164,10 @@
               </ul>
               <button
                 @click="handleSubscription('yearly')"
-                class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                :disabled="loading"
+                class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
               >
-                Souscrire
+                {{ loading ? 'Traitement...' : 'Souscrire' }}
               </button>
             </div>
           </div>
@@ -175,21 +181,26 @@
 import { ref } from 'vue';
 import { useUserStore } from '../stores/user';
 import { calculatePriceWithCommission, formatPrice } from '../utils/priceCalculator';
+import { purchaseTokens } from '../services/supabase/tokens';
 
 const userStore = useUserStore();
+const loading = ref(false);
 
-const handlePurchase = async (amount: number, totalPrice: number) => {
+const handlePurchase = async (amount: number) => {
   if (!userStore.isAuthenticated) {
     alert('Veuillez vous connecter pour effectuer un achat');
     return;
   }
 
   try {
-    // Logique d'achat à implémenter avec Firebase
-    console.log(`Achat de ${amount} jetons pour ${totalPrice} XPF`);
+    loading.value = true;
+    await purchaseTokens(amount);
+    alert(`Achat de ${amount} jetons effectué avec succès !`);
   } catch (error) {
     console.error('Erreur lors de l\'achat:', error);
     alert('Une erreur est survenue lors de l\'achat');
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -201,29 +212,29 @@ const handleSubscription = async (plan: 'monthly' | 'sixMonths' | 'yearly') => {
 
   const plans = {
     monthly: {
-      price: calculatePriceWithCommission(3000),
       tokens: 30,
       duration: 1
     },
     sixMonths: {
-      price: calculatePriceWithCommission(17100),
       tokens: 180,
       duration: 6
     },
     yearly: {
-      price: calculatePriceWithCommission(32400),
       tokens: 360,
       duration: 12
     }
   };
 
   try {
+    loading.value = true;
     const selectedPlan = plans[plan];
-    console.log(`Souscription au plan ${plan}:`, selectedPlan);
-    // Logique de souscription à implémenter avec Firebase
+    await purchaseTokens(selectedPlan.tokens);
+    alert(`Souscription au plan ${plan} effectuée avec succès !`);
   } catch (error) {
     console.error('Erreur lors de la souscription:', error);
     alert('Une erreur est survenue lors de la souscription');
+  } finally {
+    loading.value = false;
   }
 };
 </script>

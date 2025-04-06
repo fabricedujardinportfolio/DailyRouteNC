@@ -21,6 +21,7 @@
       <label class="block text-sm font-medium text-gray-700 mb-1">Commune</label>
       <select
         v-model="filters.commune"
+        :disabled="!filters.province"
         class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
       >
         <option value="">Toutes les communes</option>
@@ -35,6 +36,7 @@
       <label class="block text-sm font-medium text-gray-700 mb-1">Quartier</label>
       <select
         v-model="filters.quartier"
+        :disabled="!filters.commune"
         class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
       >
         <option value="">Tous les quartiers</option>
@@ -44,20 +46,41 @@
       </select>
     </div>
 
-    <!-- Note minimale du conducteur -->
+    <!-- Date de départ -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Note minimale du conducteur</label>
-      <div class="flex items-center space-x-2">
-        <template v-for="rating in 5" :key="rating">
-          <button
-            @click="filters.minRating = rating"
-            class="text-2xl"
-            :class="rating <= filters.minRating ? 'text-yellow-400' : 'text-gray-300'"
-          >
-            ★
-          </button>
-        </template>
-      </div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Date de départ</label>
+      <input
+        type="date"
+        v-model="filters.departureDate"
+        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+      />
+    </div>
+
+    <!-- Prix maximum (en jetons) -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">
+        Prix maximum: {{ filters.maxPrice ? `${filters.maxPrice} jetons` : 'Aucune limite' }}
+      </label>
+      <input
+        type="range"
+        v-model="filters.maxPrice"
+        min="0"
+        max="100"
+        step="5"
+        class="w-full"
+      />
+    </div>
+
+    <!-- Places minimum -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Places minimum</label>
+      <input
+        type="number"
+        v-model="filters.minSeats"
+        min="1"
+        max="8"
+        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+      />
     </div>
 
     <!-- Bouton de réinitialisation -->
@@ -72,28 +95,33 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch, onMounted, computed } from 'vue';
-import { fetchProvinces, fetchCommunes, fetchQuartiers, type Province, type Commune, type Quartier } from '../../services/supabase/reference';
+import { fetchProvinces, fetchCommunes, fetchQuartiers } from '../../services/supabase/reference';
+import type { Province, Commune, Quartier } from '../../services/supabase/reference';
 
-interface RouteFilters {
+interface Filters {
   province: string;
   commune: string;
   quartier: string;
-  minRating: number;
+  departureDate: string;
+  maxPrice: number;
+  minSeats: number;
 }
 
 const emit = defineEmits<{
-  (e: 'update:filters', filters: RouteFilters): void;
+  (e: 'update:filters', filters: Filters): void;
 }>();
 
 const provinces = ref<Province[]>([]);
 const communes = ref<Commune[]>([]);
 const quartiers = ref<Quartier[]>([]);
 
-const filters = reactive<RouteFilters>({
+const filters = reactive<Filters>({
   province: '',
   commune: '',
   quartier: '',
-  minRating: 0
+  departureDate: '',
+  maxPrice: 0,
+  minSeats: 1
 });
 
 const filteredCommunes = computed(() => {
@@ -126,9 +154,13 @@ watch(filters, (newFilters) => {
 }, { deep: true });
 
 const resetFilters = () => {
-  filters.province = '';
-  filters.commune = '';
-  filters.quartier = '';
-  filters.minRating = 0;
+  Object.assign(filters, {
+    province: '',
+    commune: '',
+    quartier: '',
+    departureDate: '',
+    maxPrice: 0,
+    minSeats: 1
+  });
 };
 </script>

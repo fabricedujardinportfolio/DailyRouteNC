@@ -5,7 +5,11 @@
         <div class="p-6">
           <h1 class="text-2xl font-semibold text-gray-900 mb-6">Mon Profil</h1>
           
-          <form @submit.prevent="handleSubmit" class="space-y-6">
+          <div v-if="loading" class="text-center py-8">
+            <p class="text-gray-600">Chargement du profil...</p>
+          </div>
+
+          <form v-else @submit.prevent="handleSubmit" class="space-y-6">
             <!-- Photo de profil -->
             <div class="flex items-center space-x-6">
               <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
@@ -62,14 +66,15 @@
               <div>
                 <label class="block text-sm font-medium text-gray-700">Type de compte</label>
                 <select
-                  v-model="form.role"
+                  v-model="selectedRole"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  :disabled="userStore.user?.documents.status === 'verified'"
+                  :disabled="loading || form.documents?.status === 'verified'"
                 >
-                  <option value="walker">Marcheur</option>
-                  <option value="driver">Conducteur</option>
+                  <option v-for="role in roles" :key="role.name" :value="role.name">
+                    {{ role.description }}
+                  </option>
                 </select>
-                <p v-if="userStore.user?.documents.status === 'verified'" class="mt-1 text-sm text-gray-500">
+                <p v-if="form.documents?.status === 'verified'" class="mt-1 text-sm text-gray-500">
                   Le type de compte ne peut plus être modifié une fois vérifié
                 </p>
               </div>
@@ -88,7 +93,7 @@
               />
 
               <!-- Documents spécifiques aux conducteurs -->
-              <template v-if="form.role === 'driver'">
+              <template v-if="isDriver">
                 <DocumentUpload
                   title="Permis de conduire"
                   :document="form.documents.driverLicense"
@@ -183,18 +188,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useUserStore } from '../stores/user';
 import type { User, Driver, UserDocuments } from '../types/user';
 import DocumentUpload from '../components/profile/DocumentUpload.vue';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { supabase } from '../services/supabase';
+
+interface UserRoleData {
+  roles: {
+    name: 'driver' | 'walker' | 'double_role';
+  }
+}
 
 interface ProfileForm {
   name: string;
   email: string;
   phoneNumber: string;
   profilePicture: string;
-  role: 'driver' | 'walker';
+  role: User['role'];
   documents: UserDocuments;
   vehicle: {
     model: string;
@@ -205,8 +217,10 @@ interface ProfileForm {
 }
 
 const userStore = useUserStore();
-const loading = computed(() => userStore.loading);
-const error = computed(() => userStore.error);
+const loading = ref(false);
+const error = ref('');
+const selectedRole = ref<User['role']>('walker');
+const roles = ref<{ name: string; description: string; }[]>([]);
 
 const defaultVehicle = {
   model: '',
@@ -229,20 +243,125 @@ const form = ref<ProfileForm>({
   vehicle: { ...defaultVehicle },
 });
 
-onMounted(() => {
-  if (userStore.user) {
-    const user = userStore.user;
+const isDriver = computed(() => {
+  return selectedRole.value === 'driver' || selectedRole.value === 'double_role';
+});
+
+const loadRoles = async () => {
+  try {
+    const { data, error: rolesError } = await supabase
+      .from('roles')
+      .select('*')
+      .order('name');
+    
+    if (rolesError) throw rolesError;
+    roles.value = data || [];
+  } catch (err) {
+    console.error('Erreur lors du chargement des rôles:', err);
+    error.value = 'Erreur lors du chargement des rôles';
+  }
+};
+
+const loadUserProfile = async () => {
+  try {
+    loading.value = true;
+    
+    // Get current user data
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError) throw authError;
+    if (!user) throw new Error('Utilisateur non connecté');
+
+    // Get user profile
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (profileError) throw profileError;
+
+    // Get user role
+    const { data: roleData, error: roleError } = await supabase
+      .from('user_roles')
+      .select('roles(name)')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (roleError) throw roleError;
+
+    const userRole = roleData as unknown as UserRoleData;
+
+    // Update form with user data
     form.value = {
-      name: user.name,
-      email: user.email,
-      phoneNumber: user.phoneNumber || '',
-      profilePicture: user.profilePicture || '',
-      role: user.role,
-      documents: user.documents || defaultDocuments,
-      vehicle: user.role === 'driver' && (user as Driver).vehicle
-        ? { ...(user as Driver).vehicle }
-        : { ...defaultVehicle },
+      name: profileData?.name || user.user_metadata?.name || '',
+      email: user.email || '',
+      phoneNumber: profileData?.phone || '',
+      profilePicture: profileData?.avatar_url || '',
+      role: userRole?.roles?.name || 'walker',
+      documents: profileData?.documents || defaultDocuments,
+      vehicle: profileData?.vehicle || { ...defaultVehicle },
     };
+
+    selectedRole.value = userRole?.roles?.name || 'walker';
+  } catch (err) {
+    console.error('Error loading user profile:', err);
+    error.value = 'Erreur lors du chargement du profil';
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(async () => {
+  await Promise.all([
+    loadRoles(),
+    loadUserProfile()
+  ]);
+});
+
+watch(selectedRole, async (newRole) => {
+  if (newRole !== form.value.role) {
+    try {
+      loading.value = true;
+      
+      // Get role ID
+      const { data: roleData, error: roleError } = await supabase
+        .from('roles')
+        .select('id')
+        .eq('name', newRole)
+        .single();
+
+      if (roleError) throw roleError;
+
+      // Update user_roles
+      const { error: updateError } = await supabase
+        .from('user_roles')
+        .upsert({
+          user_id: userStore.user?.id,
+          role_id: roleData.id
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (updateError) throw updateError;
+
+      // Update local form
+      form.value.role = newRole;
+      
+      // Update user store
+      if (userStore.user) {
+        await userStore.updateProfile({
+          ...userStore.user,
+          role: newRole
+        });
+      }
+    } catch (err) {
+      console.error('Erreur lors du changement de rôle:', err);
+      error.value = 'Erreur lors du changement de rôle';
+      // Reset to previous role
+      selectedRole.value = form.value.role;
+    } finally {
+      loading.value = false;
+    }
   }
 });
 
@@ -299,38 +418,46 @@ const handleProfilePictureUpload = async () => {
 
 const handleSubmit = async () => {
   try {
-    const updateData: Partial<User> = {
-      name: form.value.name,
-      phoneNumber: form.value.phoneNumber,
-      profilePicture: form.value.profilePicture,
-      role: form.value.role,
-      documents: form.value.documents,
-    };
+    loading.value = true;
+    error.value = '';
 
-    if (form.value.role === 'driver') {
-      (updateData as Partial<Driver>).vehicle = form.value.vehicle;
+    // Update profile in Supabase
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .upsert({
+        id: userStore.user?.id,
+        name: form.value.name,
+        phone: form.value.phoneNumber,
+        avatar_url: form.value.profilePicture,
+        documents: form.value.documents,
+        vehicle: isDriver.value ? form.value.vehicle : null,
+        updated_at: new Date().toISOString()
+      });
+
+    if (updateError) throw updateError;
+
+    // Update user store
+    if (userStore.user) {
+      await userStore.updateProfile({
+        ...userStore.user,
+        name: form.value.name,
+        phoneNumber: form.value.phoneNumber,
+        profilePicture: form.value.profilePicture,
+        documents: form.value.documents,
+        ...(isDriver.value && { vehicle: form.value.vehicle })
+      });
     }
 
-    await userStore.updateProfile(updateData);
-  } catch (error) {
-    console.error('Erreur lors de la mise à jour du profil:', error);
+    alert('Profil mis à jour avec succès');
+  } catch (err) {
+    console.error('Erreur lors de la mise à jour du profil:', err);
+    error.value = 'Erreur lors de la mise à jour du profil';
+  } finally {
+    loading.value = false;
   }
 };
 
-const resetForm = () => {
-  if (userStore.user) {
-    const user = userStore.user;
-    form.value = {
-      name: user.name,
-      email: user.email,
-      phoneNumber: user.phoneNumber || '',
-      profilePicture: user.profilePicture || '',
-      role: user.role,
-      documents: user.documents || defaultDocuments,
-      vehicle: user.role === 'driver' && (user as Driver).vehicle
-        ? { ...(user as Driver).vehicle }
-        : { ...defaultVehicle },
-    };
-  }
+const resetForm = async () => {
+  await loadUserProfile();
 };
 </script>

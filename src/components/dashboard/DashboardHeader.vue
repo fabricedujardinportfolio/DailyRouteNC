@@ -9,7 +9,7 @@
       </div>
       <div class="text-right">
         <div class="text-lg font-semibold text-gray-900">
-          Solde: {{ user?.tokensBalance || 0 }} jetons
+          Solde: {{ userStore.tokenBalance }} jetons
         </div>
         <router-link
           to="/tokens-shop"
@@ -24,11 +24,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useUserStore } from '../../stores/user';
 import type { User } from '../../types/user';
 
 const props = defineProps<{
   user: User | null;
 }>();
+
+const userStore = useUserStore();
 
 const welcomeMessage = computed(() => {
   const hour = new Date().getHours();

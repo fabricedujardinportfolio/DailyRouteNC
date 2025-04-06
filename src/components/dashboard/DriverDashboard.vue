@@ -40,7 +40,18 @@
                 {{ trip.startLocation }} → {{ trip.endLocation }}
               </div>
               <div class="text-sm text-gray-600">
-                {{ formatDate(trip.date) }} • {{ trip.passengers.length }}/{{ trip.maxPassengers }} passagers
+                {{ formatDate(trip.date) }} • {{ trip.bookings_count }}/{{ trip.maxPassengers }} passagers
+              </div>
+              <!-- Nouvelles réservations -->
+              <div v-if="trip.new_bookings && trip.new_bookings.length > 0" class="mt-2">
+                <div class="text-sm font-medium text-blue-600">
+                  Nouvelles réservations :
+                </div>
+                <ul class="mt-1 space-y-1">
+                  <li v-for="booking in trip.new_bookings" :key="booking.id" class="text-sm text-gray-600">
+                    {{ booking.user_name }} • {{ formatDateTime(booking.created_at) }}
+                  </li>
+                </ul>
               </div>
             </div>
             <div class="text-right">
@@ -86,6 +97,15 @@ defineProps<{
 const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString('fr-FR', {
     weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+const formatDateTime = (date: string) => {
+  return new Date(date).toLocaleDateString('fr-FR', {
     day: 'numeric',
     month: 'long',
     hour: '2-digit',

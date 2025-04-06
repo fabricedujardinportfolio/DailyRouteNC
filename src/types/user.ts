@@ -2,11 +2,11 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'driver' | 'walker';
+  role: 'driver' | 'walker' | 'double_role';
   phoneNumber?: string;
   profilePicture?: string;
   tokensBalance?: number;
-  totalTrips?: number; // Assurez-vous que cette ligne est présente
+  totalTrips?: number;
   totalDistance?: number;
   averageRating?: number;
   isVerified: boolean;
@@ -30,7 +30,7 @@ export interface DocumentInfo {
 }
 
 export interface Driver extends User {
-  role: 'driver';
+  role: 'driver' | 'double_role';
   vehicle: {
     model: string;
     color: string;
@@ -41,29 +41,36 @@ export interface Driver extends User {
 }
 
 export interface Walker extends User {
-  role: 'walker';
+  role: 'walker' | 'double_role';
   tokens: number;
   bookings: Booking[];
 }
 
 export interface Route {
   id: string;
-  driverId: string;
-  driverName?: string; // Ajoutez cette ligne si nécessaire
-  startLocation: GeoPoint;
-  endLocation: GeoPoint;
+  driver_id: string;
+  startLocation: Location;
+  endLocation: Location;
   departureTime: string;
+  estimatedArrivalTime?: string;
   availableSeats: number;
   price: number;
-  frequency: 'daily' | 'weekdays' | 'custom';
+  minimum_tokens: number;
+  frequency?: 'daily' | 'weekdays' | 'custom';
   customDays?: string[];
   driverRating?: number;
+  comments?: string;
+  bookings_count: number;
+  is_booked?: boolean;
 }
 
-export interface GeoPoint {
-  latitude: number;
-  longitude: number;
-  address: string;
+export interface Location {
+  province: string;
+  commune?: string;
+  quartier?: string;
+  province_name?: string;
+  commune_name?: string;
+  quartier_name?: string;
 }
 
 export interface Booking {
@@ -72,8 +79,6 @@ export interface Booking {
   walkerId: string;
   driverId: string;
   status: 'pending' | 'confirmed' | 'cancelled';
-  pickupLocation: GeoPoint;
-  dropoffLocation: GeoPoint;
   date: string;
   tokensUsed: number;
 }

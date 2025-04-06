@@ -12,23 +12,23 @@ export async function addRoute(routeData: Partial<Route>) {
     }
 
     // Convertir les dates en format ISO
-    const departureTime = new Date(routeData.departureTime).toISOString();
-    const estimatedArrivalTime = new Date(routeData.estimatedArrivalTime).toISOString();
+    const departureTime = routeData.departureTime ? new Date(routeData.departureTime).toISOString() : undefined;
+    const estimatedArrivalTime = routeData.estimatedArrivalTime ? new Date(routeData.estimatedArrivalTime).toISOString() : undefined;
 
     const { data, error } = await supabase
       .from('routes')
       .insert([{
-        driver_id: user.id,  // Utiliser l'ID Supabase
-        start_location: {
+        driver_id: user.id,
+        start_location: routeData.startLocation ? {
           province: routeData.startLocation.province,
           commune: routeData.startLocation.commune,
           quartier: routeData.startLocation.quartier
-        },
-        end_location: {
+        } : undefined,
+        end_location: routeData.endLocation ? {
           province: routeData.endLocation.province,
           commune: routeData.endLocation.commune,
           quartier: routeData.endLocation.quartier
-        },
+        } : undefined,
         departure_time: departureTime,
         estimated_arrival_time: estimatedArrivalTime,
         available_seats: routeData.availableSeats,
@@ -92,28 +92,28 @@ export async function fetchRoutes() {
     ]);
 
     // Créer des maps pour un accès rapide
-    const provincesMap = new Map(provinces.data.map(p => [p.id, p]));
-    const communesMap = new Map(communes.data.map(c => [c.id, c]));
-    const quartiersMap = new Map(quartiers.data.map(q => [q.id, q]));
+    const provincesMap = new Map(provinces.data?.map(p => [p.id, p]) || []);
+    const communesMap = new Map(communes.data?.map(c => [c.id, c]) || []);
+    const quartiersMap = new Map(quartiers.data?.map(q => [q.id, q]) || []);
 
     // Ajouter les noms aux routes
-    const routesWithNames = routes.map(route => ({
+    const routesWithNames = routes?.map(route => ({
       ...route,
-      start_location: {
+      startLocation: {
         ...route.start_location,
-        province_name: provincesMap.get(route.start_location.province)?.name,
-        commune_name: communesMap.get(route.start_location.commune)?.name,
-        quartier_name: quartiersMap.get(route.start_location.quartier)?.name
+        province_name: provincesMap.get(route.start_location?.province)?.name,
+        commune_name: communesMap.get(route.start_location?.commune)?.name,
+        quartier_name: quartiersMap.get(route.start_location?.quartier)?.name
       },
-      end_location: {
+      endLocation: {
         ...route.end_location,
-        province_name: provincesMap.get(route.end_location.province)?.name,
-        commune_name: communesMap.get(route.end_location.commune)?.name,
-        quartier_name: quartiersMap.get(route.end_location.quartier)?.name
+        province_name: provincesMap.get(route.end_location?.province)?.name,
+        commune_name: communesMap.get(route.end_location?.commune)?.name,
+        quartier_name: quartiersMap.get(route.end_location?.quartier)?.name
       }
     }));
 
-    return routesWithNames;
+    return routesWithNames || [];
   } catch (error) {
     console.error('Erreur lors de la récupération des routes:', error);
     throw error;

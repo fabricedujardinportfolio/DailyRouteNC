@@ -19,7 +19,12 @@ export interface Trip {
   date: string;
   price: number;
   maxPassengers: number;
-  passengers: string[];
+  bookings_count: number;
+  new_bookings?: {
+    id: string;
+    user_name: string;
+    created_at: string;
+  }[];
   driverName?: string;
   tokens?: number;
 }
